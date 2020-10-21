@@ -22,5 +22,4 @@ resources:
     cpu: 100m
     memory: 128Mi
 env:
-  - name: APP_RUN
-    value: 'npm --loglevel warn start'
+  APP_RUN: 'npm --loglevel warn start'
