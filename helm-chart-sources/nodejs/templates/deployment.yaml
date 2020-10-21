@@ -16,6 +16,20 @@ spec:
     spec:
       containers:
         - name: {{ template "fullname" . }}-nodejs
+          {{- if or $.Values.env $.Values.envSecrets }}
+          env:
+              {{- range $key, $value := $.Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $key, $secret := $.Values.envSecrets }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret }}
+                  key: {{ $key | quote }}
+            {{- end }}
+          {{- end }}
           image: '{{ .Values.image.nodejs.repository }}:{{ .Values.image.nodejs.tag }}'
           imagePullPolicy: {{  default "" .Values.image.pullPolicy | quote }}
           readinessProbe:
