@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ template "fullname" . }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "fullname" . }}
+    spec:
+      containers:
+        - name: {{ template "fullname" . }}-nodejs
+          image: '{{ .Values.image.nodejs.repository }}:{{ .Values.image.nodejs.tag }}'
+          imagePullPolicy: {{  default "" .Values.image.pullPolicy | quote }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.ports.nodejs }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.ports.nodejs }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          ports:
+            - containerPort: {{ .Values.ports.nodejs }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ template "fullname" . }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "fullname" . }}
+    spec:
+      containers:
+        - name: {{ template "fullname" . }}-phpfpm
+          image: '{{ .Values.image.php.repository }}:{{ .Values.image.php.tag }}'
+          imagePullPolicy: {{  default "" .Values.image.pullPolicy | quote }}
+          ports:
+            - containerPort: {{ .Values.ports.php }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.ports.php }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.ports.php }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+        - name: {{ template "fullname" . }}-nginx
+          image: '{{ .Values.image.nginx.repository }}:{{ .Values.image.nginx.tag }}'
+          imagePullPolicy: {{ default "" .Values.image.pullPolicy | quote }}
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /opt/bitnami/nginx/conf/server_blocks/
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ template "fullname" . }}
