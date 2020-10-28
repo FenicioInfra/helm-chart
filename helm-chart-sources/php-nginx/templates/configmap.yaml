@@ -14,6 +14,6 @@ data:
       location / {
             fastcgi_pass 127.0.0.1:{{ .Values.ports.php }};
             include fastcgi_params;
-            fastcgi_param SCRIPT_FILENAME /usr/src/app/public/index.php;
+            fastcgi_param SCRIPT_FILENAME /usr/src/app/index.php;
       }
     }
