@@ -26,8 +26,8 @@ spec:
             - name: {{ $key }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ $secret }}
-                  key: {{ $key | quote }}
+                  name: {{ (split "/" $secret)._0 }}
+                  key: {{ (split "/" $secret)._1 }}
           {{- end }}
         {{- end }}
           image: '{{ .Values.image.nodejs.repository }}:{{ .Values.image.nodejs.tag }}'
