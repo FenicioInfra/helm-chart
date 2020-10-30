@@ -2,16 +2,16 @@ apiVersion: v1
 entries:
   nodejs:
   - apiVersion: v2
-    created: "2020-10-28T11:27:14.420452-03:00"
+    created: "2020-10-30T16:43:55.242538-03:00"
     description: A Helm chart for Kubernetes
-    digest: f4f7ac557f31cb7af9ce439445546a51a9d8bd37e61d8313a8e9023ad3b2b9be
+    digest: 5a1e15dfdc75ba38409f0e0bd59e2893f5186b5d558c67a6de4354bf6c0407c2
     name: nodejs
     type: application
     urls:
     - https://fenicioinfra.github.io/helm-chart/nodejs-1.0.3.tgz
     version: 1.0.3
   - apiVersion: v2
-    created: "2020-10-28T11:27:14.419731-03:00"
+    created: "2020-10-30T16:43:55.242194-03:00"
     description: A Helm chart for Kubernetes
     digest: f21fb67d768f258dd391d751e730b9c910ff63394e05b34b7d78bfe4ddd654cd
     name: nodejs
@@ -20,7 +20,7 @@ entries:
     - https://fenicioinfra.github.io/helm-chart/nodejs-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v2
-    created: "2020-10-28T11:27:14.419082-03:00"
+    created: "2020-10-30T16:43:55.24135-03:00"
     description: A Helm chart for Kubernetes
     digest: aaafef057904901b2a397bf51952d19381872cd8610d3f01c2fc6541cd8ef459
     name: nodejs
@@ -30,12 +30,21 @@ entries:
     version: 1.0.0
   php-nginx:
   - apiVersion: v2
-    created: "2020-10-28T11:27:14.420999-03:00"
+    created: "2020-10-30T16:43:55.243272-03:00"
     description: A Helm chart for Kubernetes
-    digest: 8e68e2b285476d5ade21f3e19e236fefc37874a3ee7298e0d59d9586091c0d35
+    digest: 5796d054fdebe8e9125fbc1e024cee6f1f08dec1e67608337c5692f11e172dbc
+    name: php-nginx
+    type: application
+    urls:
+    - https://fenicioinfra.github.io/helm-chart/php-nginx-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
+    created: "2020-10-30T16:43:55.242896-03:00"
+    description: A Helm chart for Kubernetes
+    digest: 08f7a4645953a44dc98bfd52d14e8e81b13f307652024b97cc54a49808ffe385
     name: php-nginx
     type: application
     urls:
     - https://fenicioinfra.github.io/helm-chart/php-nginx-1.0.1.tgz
     version: 1.0.1
-generated: "2020-10-28T11:27:14.415056-03:00"
+generated: "2020-10-30T16:43:55.239596-03:00"
