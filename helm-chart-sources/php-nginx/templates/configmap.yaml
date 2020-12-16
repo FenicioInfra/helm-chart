@@ -17,5 +17,5 @@ data:
             fastcgi_split_path_info ^(.+\.php)(/.+)$;
             fastcgi_param PATH_INFO $fastcgi_path_info;
             fastcgi_param SCRIPT_FILENAME /usr/src/app/index.php;
-      }
+            fastcgi_param   SCRIPT_NAME index.php;}
     }
