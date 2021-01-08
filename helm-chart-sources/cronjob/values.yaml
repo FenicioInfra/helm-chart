@@ -1,0 +1,12 @@
+# Default values for nodejs
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  cronjob:
+    repository: ""
+    tag: 0.1.0
+cronjob:
+  schedule: ""
+  concurrency: "Forbid"
+env:
+  APP_RUN: 'npm --loglevel warn start'

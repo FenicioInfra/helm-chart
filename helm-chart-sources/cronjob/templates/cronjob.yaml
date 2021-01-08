@@ -1,0 +1,50 @@
+kind: CronJob
+apiVersion: batch/v1beta1
+metadata:
+  annotations:
+  name: {{ template "fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    app.kubernetes.io/instance: {{ template "fullname" . }}
+spec:
+  schedule: {{ .Values.cronjob.schedule }}
+  concurrencyPolicy: {{ .Values.cronjob.concurrency }}
+  suspend: false
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            parent: {{ template "fullname" . }}
+        spec:
+          containers:
+            - name: {{ template "fullname" . }}
+              image:  '{{ .Values.image.cronjob.repository }}:{{ .Values.image.cronjob.tag }}'
+            {{- if or .Values.env .Values.envSecrets }}
+              env:
+              {{- range $key, $value := $.Values.env }}
+                - name: {{ $key }}
+                  value: {{ $value | quote }}
+              {{- end }}
+              {{- range $key, $secret := $.Values.envSecrets }}
+                - name: {{ $key }}
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ (split "/" $secret)._0 }}
+                      key: {{ (split "/" $secret)._1 }}
+              {{- end }}
+            {{- end }}
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: IfNotPresent
+          restartPolicy: Never
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+          schedulerName: default-scheduler
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
