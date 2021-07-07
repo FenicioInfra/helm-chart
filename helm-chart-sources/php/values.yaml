@@ -6,9 +6,6 @@ image:
   php:
     repository: ""
     tag: 0.1.0
-  nginx:
-    repository: "bitnami/nginx"
-    tag: 1.19.1
   pullPolicy: IfNotPresent
 port: 9000
 service:
