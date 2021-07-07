@@ -30,7 +30,7 @@ spec:
                   key: {{ (split "/" $secret)._1 }}
           {{- end }}
         {{- end }}
-          image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+          image: '{{ .Values.image.php.repository }}:{{ .Values.image.php.tag }}'
           imagePullPolicy: {{  default "" .Values.image.pullPolicy | quote }}
           ports:
             - containerPort: {{ .Values.port }}
