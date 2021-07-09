@@ -5,6 +5,7 @@ metadata:
   name: {{ template "fullname" . }}
 spec:
   host: {{ .Values.route.host }}
+  path: {{ .Values.route.path }}
   to:
     kind: Service
     name: {{ template "fullname" . }}

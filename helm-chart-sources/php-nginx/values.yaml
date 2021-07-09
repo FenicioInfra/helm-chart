@@ -18,6 +18,7 @@ service:
 route:
   enabled: true
   host: php-example.srv.fenicio.app
+  path: /
 resources:
   limits:
     cpu: 100m
