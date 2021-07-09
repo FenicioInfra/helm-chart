@@ -6,21 +6,8 @@ metadata:
     {{ $key }}: {{ $value }}  
     {{- end }}
     nginx.org/server-snippets: >-
-      location {{ .Values.ingress.path }} {
-      index  index.php;
-      fastcgi_pass    {{ template "fullname" . }}-svc.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.port }};
-      fastcgi_index   index.php;
-      fastcgi_split_path_info ^(.+\.php)(/.+)$;
-      include fastcgi_params;
-      fastcgi_param   PATH_INFO $fastcgi_path_info;
-      fastcgi_param   SCRIPT_FILENAME  /usr/src/app/public/index.php;
-      fastcgi_param   SCRIPT_NAME index.php;
-      {{- if .Values.ingress.location }}
-      {{- range $key, $value := .Values.ingress.location }}
-      {{ $key }}   {{ $value }};
-      {{- end }}
-      {{- end }}
-      }   
+      {{ .Values.annotations.extra_parameters_snippets }}
+{{ include "php.location_snippet" . | toString | indent 6 }} 
   name: {{ template "fullname" . }}-ingress
   namespace: {{ .Release.Namespace }}
 spec:
