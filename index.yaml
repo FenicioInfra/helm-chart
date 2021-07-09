@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   cronjob:
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.057195629-03:00"
+    created: "2021-07-09T12:27:20.604254-03:00"
     description: A Helm chart for Kubernetes Cronjobs
-    digest: d84d2630088b92cfefd865112d802b9f1af60d1b86b4ced6f813d7e09ecde9d3
+    digest: 04fbf4cc3932463db859fd9c4d4c2b9a7a010ef807b5f6500f112dc3e0cf8b14
     name: cronjob
     type: application
     urls:
@@ -12,16 +12,16 @@ entries:
     version: 1.0.0
   nodejs:
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.059745812-03:00"
+    created: "2021-07-09T12:27:20.60829-03:00"
     description: A Helm chart for Kubernetes
-    digest: 3021e19f3d481c05d3796125b6dfe85253970f6e718f12bf0f2da4c7e3396b94
+    digest: dbd040c755744e25fce20050dcf7b5993cb369b37cce72d5c23103ca62a3193a
     name: nodejs
     type: application
     urls:
     - https://fenicioinfra.github.io/helm-chart/nodejs-1.0.4.tgz
     version: 1.0.4
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.059096744-03:00"
+    created: "2021-07-09T12:27:20.607907-03:00"
     description: A Helm chart for Kubernetes
     digest: a3c65f9a10694a7bef8bce4577a6ba6e6da34cc64253bdca4766c5f7f7a26abb
     name: nodejs
@@ -30,7 +30,7 @@ entries:
     - https://fenicioinfra.github.io/helm-chart/nodejs-1.0.3.tgz
     version: 1.0.3
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.058585861-03:00"
+    created: "2021-07-09T12:27:20.606044-03:00"
     description: A Helm chart for Kubernetes
     digest: f21fb67d768f258dd391d751e730b9c910ff63394e05b34b7d78bfe4ddd654cd
     name: nodejs
@@ -39,7 +39,7 @@ entries:
     - https://fenicioinfra.github.io/helm-chart/nodejs-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.057585298-03:00"
+    created: "2021-07-09T12:27:20.60499-03:00"
     description: A Helm chart for Kubernetes
     digest: aaafef057904901b2a397bf51952d19381872cd8610d3f01c2fc6541cd8ef459
     name: nodejs
@@ -49,7 +49,16 @@ entries:
     version: 1.0.0
   php:
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.060147571-03:00"
+    created: "2021-07-09T12:27:20.609047-03:00"
+    description: A Helm chart for Kubernetes
+    digest: 5a9a0e8c2841aa83ddb673c319a769ec5bc51fae4adf50e32ec104234d54dfd6
+    name: php
+    type: application
+    urls:
+    - https://fenicioinfra.github.io/helm-chart/php-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
+    created: "2021-07-09T12:27:20.608629-03:00"
     description: A Helm chart for Kubernetes
     digest: a6a1bb55df1fe06f4ee602896c5f9fcb3bb6829e96819fda1066b922d7534e74
     name: php
@@ -59,16 +68,16 @@ entries:
     version: 1.0.0
   php-nginx:
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.061870518-03:00"
+    created: "2021-07-09T12:27:20.612387-03:00"
     description: A Helm chart for Kubernetes
-    digest: a9db1b5dba86ed948185291c3e4db2cd51a3fa294897e1617a15d5a21cf2ffde
+    digest: 8dc0f44097a2f34bdd2fdba36c8a8623febd20ea4979c7259ac7908aa45cbd86
     name: php-nginx
     type: application
     urls:
     - https://fenicioinfra.github.io/helm-chart/php-nginx-1.0.5.tgz
     version: 1.0.5
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.061508457-03:00"
+    created: "2021-07-09T12:27:20.611986-03:00"
     description: A Helm chart for Kubernetes
     digest: fa720643fff6e19357e62289ada69888c9faea789371b969b6a46a051f619817
     name: php-nginx
@@ -77,7 +86,7 @@ entries:
     - https://fenicioinfra.github.io/helm-chart/php-nginx-1.0.4.tgz
     version: 1.0.4
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.061182822-03:00"
+    created: "2021-07-09T12:27:20.611305-03:00"
     description: A Helm chart for Kubernetes
     digest: f97bd2cfeed51341bb0eb6ef4b6dc4f93c65fe93b64881e723ccc0253dd6a863
     name: php-nginx
@@ -86,7 +95,7 @@ entries:
     - https://fenicioinfra.github.io/helm-chart/php-nginx-1.0.3.tgz
     version: 1.0.3
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.060843442-03:00"
+    created: "2021-07-09T12:27:20.610546-03:00"
     description: A Helm chart for Kubernetes
     digest: 5796d054fdebe8e9125fbc1e024cee6f1f08dec1e67608337c5692f11e172dbc
     name: php-nginx
@@ -95,7 +104,7 @@ entries:
     - https://fenicioinfra.github.io/helm-chart/php-nginx-1.0.2.tgz
     version: 1.0.2
   - apiVersion: v2
-    created: "2021-07-07T17:58:25.060505495-03:00"
+    created: "2021-07-09T12:27:20.609803-03:00"
     description: A Helm chart for Kubernetes
     digest: 08f7a4645953a44dc98bfd52d14e8e81b13f307652024b97cc54a49808ffe385
     name: php-nginx
@@ -103,4 +112,4 @@ entries:
     urls:
     - https://fenicioinfra.github.io/helm-chart/php-nginx-1.0.1.tgz
     version: 1.0.1
-generated: "2021-07-07T17:58:25.056772913-03:00"
+generated: "2021-07-09T12:27:20.600768-03:00"
