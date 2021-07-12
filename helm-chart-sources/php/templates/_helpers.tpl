@@ -28,10 +28,8 @@ include fastcgi_params;
 fastcgi_param   PATH_INFO $fastcgi_path_info;
 fastcgi_param   SCRIPT_FILENAME  /usr/src/app/public/index.php;
 fastcgi_param   SCRIPT_NAME index.php;
-{{- if .Values.annotations.location }}
-{{- range $key, $value := .Values.annotations.location }}
-{{ $key }}   {{ $value }};
-{{- end }}
+{{- if .Values.annotations.extra_parameters_location }}
+{{ .Values.annotations.extra_parameters_location }}
 {{- end }}
 
 {{- if eq .Values.annotations.cache_enabled true }}
