@@ -13,20 +13,20 @@ service:
 ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
+    snippets:
+      extra_parameters_snippets: tcp_nopush on; tcp_nodelay on;
+      cache_enabled: true
+      cache_config:
+        expires: 2d
+        fastcgi_cache: static-cache
+        fastcgi_ignore_headers: Cache-Control
+        fastcgi_cache_valid: any 60m
+        fastcgi_cache_revalidate: on
+        fastcgi_cache_use_stale: error timeout invalid_header updating http_500
+        fastcgi_cache_background_update: on
+      #extra_parameters_location: somestring value;
   host: fenicio.com/
   path: /path
-annotations:
-  extra_parameters_snippets: tcp_nopush on; tcp_nodelay on;
-  cache_enabled: true
-  cache_config:
-    expires: 2d
-    fastcgi_cache: static-cache
-    fastcgi_ignore_headers: Cache-Control
-    fastcgi_cache_valid: any 60m
-    fastcgi_cache_revalidate: on
-    fastcgi_cache_use_stale: error timeout invalid_header updating http_500
-    fastcgi_cache_background_update: on
-  #extra_parameters_location: somestring value;
 resources:
   limits:
     cpu: 100m

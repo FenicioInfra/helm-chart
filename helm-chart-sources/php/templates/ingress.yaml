@@ -3,10 +3,12 @@ apiVersion: networking.k8s.io/v1beta1
 metadata:
   annotations:
     {{- range $key, $value := .Values.ingress.annotations }}
+    {{- if ne $key "snippets" }}
     {{ $key }}: {{ $value }}  
     {{- end }}
+    {{- end }}
     nginx.org/server-snippets: >-
-      {{ .Values.annotations.extra_parameters_snippets }}
+      {{ .Values.ingress.annotations.snippets.extra_parameters_snippets }}
 {{ include "php.location_snippet" . | toString | indent 6 }} 
   name: {{ template "fullname" . }}-ingress
   namespace: {{ .Release.Namespace }}

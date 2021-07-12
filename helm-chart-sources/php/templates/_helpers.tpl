@@ -28,12 +28,12 @@ include fastcgi_params;
 fastcgi_param   PATH_INFO $fastcgi_path_info;
 fastcgi_param   SCRIPT_FILENAME  /usr/src/app/public/index.php;
 fastcgi_param   SCRIPT_NAME index.php;
-{{- if .Values.annotations.extra_parameters_location }}
+{{- if .Values.ingress.annotations.snippets.extra_parameters_location }}
 {{ .Values.annotations.extra_parameters_location }}
 {{- end }}
 
-{{- if eq .Values.annotations.cache_enabled true }}
-{{ template "php.cache_config" .Values.annotations.cache_config }}
+{{- if eq .Values.ingress.annotations.snippets.cache_enabled true }}
+{{ template "php.cache_config" .Values.ingress.annotations.snippets.cache_config }}
 {{- end }}
 } 
 {{- end -}}
