@@ -2,6 +2,8 @@
 # # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 replicaCount: 1
+env:
+  RUN_COMMAND: php-fpm
 image:
   php:
     repository: ""
@@ -21,9 +23,9 @@ ingress:
         fastcgi_cache: static-cache
         fastcgi_ignore_headers: Cache-Control
         fastcgi_cache_valid: any 60m
-        fastcgi_cache_revalidate: on
+        fastcgi_cache_revalidate: "on"
         fastcgi_cache_use_stale: error timeout invalid_header updating http_500
-        fastcgi_cache_background_update: on
+        fastcgi_cache_background_update: "on"
       #extra_parameters_location: somestring value;
   host: fenicio.com/
   path: /path
