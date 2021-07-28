@@ -36,6 +36,7 @@ spec:
             - containerPort: {{ .Values.port }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+          {{- if .Values.add_healthchecks  }}
           readinessProbe:
             tcpSocket:
               port: {{ .Values.port }}
@@ -46,3 +47,4 @@ spec:
               port: {{ .Values.port }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
+          {{- end }}
