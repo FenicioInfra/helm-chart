@@ -2,7 +2,14 @@
 # # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 replicaCount: 1
-add_healthchecks: true
+healthchecks:
+  enabled: true
+  # type: <port|command>
+  type: port
+  # healthcheck command. Ignored if type is set to 'port'
+  command:
+  - somecommand
+  - arg1
 env:
   RUN_COMMAND: php-fpm
 image:

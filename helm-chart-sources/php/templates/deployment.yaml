@@ -36,15 +36,33 @@ spec:
             - containerPort: {{ .Values.port }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-          {{- if .Values.add_healthchecks  }}
+        {{- with .Values.healthchecks }}
+          {{- if .enabled  }}
           readinessProbe:
+          {{- if eq .type "port"}}
             tcpSocket:
-              port: {{ .Values.port }}
+              port: {{ $.Values.port }}
+          {{- else if eq .type "command" }}
+            exec:
+              command:
+                {{- range .command }} 
+              - {{ . }}
+                {{- end }}
+          {{- end }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
           livenessProbe:
+          {{- if eq .type "port"}}
             tcpSocket:
-              port: {{ .Values.port }}
+              port: {{ $.Values.port }}
+          {{- else if eq .type "command" }}
+            exec:
+              command:
+                {{- range .command }} 
+              - {{ . }}
+                {{- end }}
+          {{- end }}
             initialDelaySeconds: 10
             timeoutSeconds: 5
           {{- end }}
+        {{- end }}
