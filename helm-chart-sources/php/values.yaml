@@ -45,3 +45,24 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  # Scaling based on memory
+  memory:
+    enabled: true
+    averageUtilization: 60
+  # Scaling based on cpu
+  cpu:
+    enabled: true
+    averageUtilization: 60
+  behavior:
+    scaleDown:
+      # How much it waits before
+      # checking again for scaleDown (if needed)
+      stabilizationWindowSeconds: 300
+    scaleUp:
+      # How much it waits before
+      # checking again for scaleUp (if needed)
+      stabilizationWindowSeconds: 180
