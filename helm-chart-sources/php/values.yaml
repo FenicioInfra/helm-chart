@@ -47,22 +47,13 @@ resources:
     memory: 128Mi
 autoscaling:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 10
+  minReplicas: 5
+  maxReplicas: 20
   # Scaling based on memory
   memory:
     enabled: true
-    averageUtilization: 60
+    averageUtilization: 70
   # Scaling based on cpu
   cpu:
     enabled: true
-    averageUtilization: 60
-  behavior:
-    scaleDown:
-      # How much it waits before
-      # checking again for scaleDown (if needed)
-      stabilizationWindowSeconds: 300
-    scaleUp:
-      # How much it waits before
-      # checking again for scaleUp (if needed)
-      stabilizationWindowSeconds: 180
+    averageUtilization: 70
