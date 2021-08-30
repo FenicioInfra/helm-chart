@@ -1,6 +1,9 @@
 # Default values for php
 # # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
+# Note: replicaCount will not be used
+# if autoscaling enabled
 replicaCount: 1
 healthchecks:
   enabled: true
