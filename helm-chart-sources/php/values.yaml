@@ -2,6 +2,11 @@
 # # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Pod priority
+priority:
+  enabled: false
+  name: high-priority
+
 # Note: replicaCount will not be used
 # if autoscaling enabled
 replicaCount: 1

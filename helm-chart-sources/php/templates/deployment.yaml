@@ -16,6 +16,9 @@ spec:
       labels:
         name: {{ template "fullname" . }}
     spec:
+      {{- if .Values.priority.enabled }}
+      priorityClassName: {{ .Values.priority.name }}
+      {{- end }}
       containers:
         - name: {{ template "fullname" . }}-phpfpm
         {{- if or .Values.env .Values.envSecrets }}
