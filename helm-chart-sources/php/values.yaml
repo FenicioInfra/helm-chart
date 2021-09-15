@@ -65,3 +65,6 @@ autoscaling:
   cpu:
     enabled: true
     averageUtilization: 70
+metrics:
+  enable: true
+  port: 9113
