@@ -54,3 +54,28 @@ add_header X-Cache-Status
       fastcgi_cache_use_stale {{ .fastcgi_cache_use_stale }}; 
       fastcgi_cache_background_update {{ .fastcgi_cache_background_update | toString }};
 {{- end -}}
+
+{{/*
+Un snippet para configurar el 
+node exporter de nginx.
+*/}}
+{{- define "node-exporter.config" -}}
+listen {
+  port = {{ .Values.metrics.port }}
+}
+
+namespace "nginx_exporter" {
+  source = {
+    syslog {
+      listen_address = "udp://127.0.0.1:5531"
+      format = "rfc3164"
+    }
+  }
+
+  format = {{ .Values.metrics.format }}
+
+  labels {
+    app = "{{ template "fullname" . }}"
+  }
+}
+{{- end -}}

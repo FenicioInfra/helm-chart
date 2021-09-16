@@ -41,20 +41,6 @@ spec:
             - containerPort: {{ .Values.port }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-      {{- if .Values.metrics.enable }}
-        - name: {{ template "fullname" . }}-node-exporter
-          image: docker.pkg.github.com/martin-helmich/prometheus-nginxlog-exporter/exporter:v1
-          args: ["-config-file", "/etc/prometheus-nginxlog-exporter/config.hcl"]
-          volumeMounts:
-            - name: exporter-config
-              configMap:
-                name: {{ template "fullname" . }}-exporter-config
-                mountPath: /etc/prometheus-nginxlog-exporter
-      volumes:
-        - name: exporter-config
-          configMap:
-            name: {{ template "fullname" . }}-exporter-config
-      {{- end }}
 
         {{- with .Values.healthchecks }}
           {{- if .enabled  }}
@@ -86,3 +72,29 @@ spec:
             timeoutSeconds: 5
           {{- end }}
         {{- end }}
+      {{- if .Values.metrics.enable }}
+        - name: {{ template "fullname" . }}-node-exporter
+          image: docker.pkg.github.com/martin-helmich/prometheus-nginxlog-exporter/exporter:v1
+          args: ["-config-file", "/etc/prometheus-nginxlog-exporter/config.hcl"]
+        {{- with .Values.healthchecks }}
+          {{- if .enabled  }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ $.Values.metrics.port }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: {{ $.Values.port }}
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          {{- end }}
+        {{- end }}
+          volumeMounts:
+            - name: exporter-config
+              mountPath: /etc/prometheus-nginxlog-exporter
+      volumes:
+        - name: exporter-config
+          configMap:
+            name: {{ template "fullname" . }}-exporter-config
+      {{- end }}
