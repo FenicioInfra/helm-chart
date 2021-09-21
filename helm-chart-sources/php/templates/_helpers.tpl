@@ -49,7 +49,9 @@ add_header X-Cache-Status
       expires {{ .expires }};
       fastcgi_cache {{ .fastcgi_cache }}; 
       fastcgi_ignore_headers {{ .fastcgi_ignore_headers }}; 
-      fastcgi_cache_valid {{ .fastcgi_cache_valid }};
+      {{- range .fastcgi_cache_valid }}
+      fastcgi_cache_valid {{ .status_code }} {{ .value }};
+      {{- end }}
       fastcgi_cache_revalidate {{ .fastcgi_cache_revalidate | toString }}; 
       fastcgi_cache_use_stale {{ .fastcgi_cache_use_stale }}; 
       fastcgi_cache_background_update {{ .fastcgi_cache_background_update | toString }};

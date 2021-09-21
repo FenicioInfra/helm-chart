@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ template "fullname" . }}-exporter-config
-  labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-data:
-  config.hcl: |
-{{ include "node-exporter.config" . | toString | indent 4 }} 
