@@ -18,6 +18,16 @@ healthchecks:
   command:
     - somecommand
     - arg1
+  readinessProbe:
+    initialDelaySeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 10
+  livenessProbe:
+    initialDelaySeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 10
 env:
   RUN_COMMAND: php-fpm
 image:

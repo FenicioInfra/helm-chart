@@ -55,8 +55,10 @@ spec:
               - {{ . }}
                 {{- end }}
           {{- end }}
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
+            initialDelaySeconds: {{ .readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .readinessProbe.successThreshold }}
+            failureThreshold: {{ .readinessProbe.failureThreshold }}
           livenessProbe:
           {{- if eq .type "port"}}
             tcpSocket:
@@ -68,7 +70,9 @@ spec:
               - {{ . }}
                 {{- end }}
           {{- end }}
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
+            initialDelaySeconds: {{ .livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .livenessProbe.successThreshold }}
+            failureThreshold: {{ .livenessProbe.failureThreshold }}
           {{- end }}
         {{- end }}
