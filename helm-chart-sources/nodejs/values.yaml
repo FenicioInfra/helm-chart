@@ -13,7 +13,7 @@ service:
   name: nodejs
 route:
   enabled: true
-  host: nodejs-example.srv.fenicio.app
+  host: nodejs-example.example.com
 resources:
   limits:
     cpu: 100m

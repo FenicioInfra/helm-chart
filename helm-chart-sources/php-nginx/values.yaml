@@ -17,7 +17,7 @@ service:
   name: nginx
 route:
   enabled: true
-  host: php-example.srv.fenicio.app
+  host: php-example.example.com
   path: /
 resources:
   limits:
