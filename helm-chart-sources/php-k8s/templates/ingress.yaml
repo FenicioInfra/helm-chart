@@ -28,7 +28,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ .Values.service.name }}
+            name: {{ template "fullname" . }}-svc
             port:
               number: {{ .Values.port }}
   {{- end }}
