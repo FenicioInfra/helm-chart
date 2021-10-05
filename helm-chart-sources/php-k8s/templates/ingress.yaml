@@ -22,9 +22,9 @@ spec:
       {{- end }}
   rules:
     - host: {{ .Values.ingress.host }}
-      backend:
-        service:
-          name: {{ .Values.service.name }}
-          port:
-            number: {{ .Values.port }}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ .Values.service.name }}
+              servicePort: {{ .Values.port }}
 {{- end }}
