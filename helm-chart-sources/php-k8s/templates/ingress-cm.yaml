@@ -5,5 +5,5 @@ metadata:
   name: {{ template "fullname" . }}-ingress-cm
   namespace: {{ .Release.Namespace }}
 data:
-  SCRIPT_FILENAME: "/usr/src/app/public/index.php"
+  SCRIPT_FILENAME: "/usr/src/app/index.php"
 {{- end }}
