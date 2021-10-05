@@ -5,7 +5,7 @@ metadata:
   annotations:
     {{- range $key, $value := .Values.ingress.annotations }}
     {{- if ne $key "snippets" }}
-    {{ $key }}: {{ $value }}  
+    {{ $key }}: {{ $value }}
     {{- end }}
     {{- end }}
     nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
@@ -16,19 +16,19 @@ metadata:
 spec:
   tls:
     - hosts:
-        - {{ .Values.ingress.host }}
+       - {{ .Values.ingress.host }}
       {{- if .Values.ingress.secretName  }}
       secretName: {{ .Values.ingress.secretName }}
       {{- end }}
   rules:
-    - host: {{ .Values.ingress.host }}
-      http:
-        paths:
-          - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: {{ .Values.service.name }}
-                  port:
-                    number: {{ .Values.port }}
-{{- end }}
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.service.name }}
+            port:
+              number: {{ .Values.port }}
+  {{- end }}
