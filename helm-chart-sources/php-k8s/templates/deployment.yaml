@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      name: {{ template "fullname" . }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "fullname" . }}
+    spec:
+      {{- if .Values.priority.enabled }}
+      priorityClassName: {{ .Values.priority.name }}
+      {{- end }}
+      containers:
+        - name: {{ template "fullname" . }}-phpfpm
+        {{- if or .Values.env .Values.envSecrets }}
+          env:
+          {{- range $key, $value := $.Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- range $key, $secret := $.Values.envSecrets }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (split "/" $secret)._0 }}
+                  key: {{ (split "/" $secret)._1 }}
+          {{- end }}
+        {{- end }}
+          image: '{{ .Values.image.php.repository }}:{{ .Values.image.php.tag }}'
+          imagePullPolicy: {{  default "" .Values.image.pullPolicy | quote }}
+          ports:
+            - containerPort: {{ .Values.port }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+
+        {{- with .Values.healthchecks }}
+          {{- if .enabled  }}
+          readinessProbe:
+          {{- if eq .type "port"}}
+            tcpSocket:
+              port: {{ $.Values.port }}
+          {{- else if eq .type "command" }}
+            exec:
+              command:
+                {{- range .command }} 
+              - {{ . }}
+                {{- end }}
+          {{- end }}
+            initialDelaySeconds: {{ .readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .readinessProbe.successThreshold }}
+            failureThreshold: {{ .readinessProbe.failureThreshold }}
+          livenessProbe:
+          {{- if eq .type "port"}}
+            tcpSocket:
+              port: {{ $.Values.port }}
+          {{- else if eq .type "command" }}
+            exec:
+              command:
+                {{- range .command }} 
+              - {{ . }}
+                {{- end }}
+          {{- end }}
+            initialDelaySeconds: {{ .livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .livenessProbe.successThreshold }}
+            failureThreshold: {{ .livenessProbe.failureThreshold }}
+          {{- end }}
+        {{- end }}
