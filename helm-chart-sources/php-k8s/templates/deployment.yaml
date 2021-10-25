@@ -45,7 +45,7 @@ spec:
         {{- with .Values.healthchecks }}
           {{- if .enabled  }}
           readinessProbe:
-          {{- if eq .type "port"}}
+          {{- if eq .type "port" }}
             tcpSocket:
               port: {{ $.Values.port }}
           {{- else if eq .type "command" }}
@@ -76,3 +76,27 @@ spec:
             failureThreshold: {{ .livenessProbe.failureThreshold }}
           {{- end }}
         {{- end }}
+        {{- if .Values.volumes }}
+          volumeMounts:
+        {{- range .Values.volumes }}
+          {{- if .name }}
+          - name: {{ .name }}
+            mountPath: {{ .mountPath | quote }}
+            {{- if .secretName }}
+            readOnly: true
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- end }}
+    {{- if .Values.volumes }}
+      volumes:
+      {{- range .Values.volumes }}
+        {{- if .name }}
+        - name: {{ .name }}
+          {{- if .secretName }}
+          secret:
+            secretName: {{ .secretName }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}

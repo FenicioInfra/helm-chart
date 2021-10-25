@@ -28,6 +28,13 @@ healthchecks:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 10
+# volumes to mount in the pods
+volumes:
+  - name: "secret1"
+    # secretName is the name of the secret to mount
+    secretName: "mysecret-name"
+    # mountPath is the directory where the secret will be mounted
+    mountPath: "/path/to/mount"
 env:
   RUN_COMMAND: php-fpm
 image:
