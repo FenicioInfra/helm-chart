@@ -37,6 +37,8 @@ volumes:
     mountPath: "/path/to/mount"
 env:
   RUN_COMMAND: php-fpm
+labels:
+  environment: ""
 image:
   php:
     repository: ""

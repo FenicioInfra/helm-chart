@@ -14,6 +14,9 @@ spec:
   template:
     metadata:
       labels:
+        {{- if .Values.labels.environment }}
+        environment: {{ .Values.labels.environment }}
+        {{- end }}
         name: {{ template "fullname" . }}
     spec:
       {{- if .Values.priority.enabled }}
