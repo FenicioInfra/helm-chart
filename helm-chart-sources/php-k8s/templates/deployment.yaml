@@ -1,33 +1,36 @@
+{{ $global := .Values.global }}
+{{- range .Values.apps }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ .appName }}
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  {{- if not .autoscaling.enabled }}
+  replicas: {{ .replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      name: {{ template "fullname" . }}
+      name: {{ .appName }}
   template:
     metadata:
       labels:
-        name: {{ template "fullname" . }}
+        name: {{ .appName }}
     spec:
-      {{- if .Values.priority.enabled }}
-      priorityClassName: {{ .Values.priority.name }}
+      {{- if .priority.enabled }}
+      priorityClassName: {{ .priority.name }}
       {{- end }}
       containers:
-        - name: {{ template "fullname" . }}-phpfpm
-        {{- if or .Values.env .Values.envSecrets }}
+        - name: cdn
+        {{- if or .env .envSecrets }}
           env:
-          {{- range $key, $value := $.Values.env }}
+          {{- range $key, $value := .env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
           {{- end }}
-          {{- range $key, $secret := $.Values.envSecrets }}
+          {{- range $key, $secret := .envSecrets }}
             - name: {{ $key }}
               valueFrom:
                 secretKeyRef:
@@ -35,19 +38,37 @@ spec:
                   key: {{ (split "/" $secret)._1 }}
           {{- end }}
         {{- end }}
-          image: '{{ .Values.image.php.repository }}:{{ .Values.image.php.tag }}'
-          imagePullPolicy: {{  default "" .Values.image.pullPolicy | quote }}
-          ports:
-            - containerPort: {{ .Values.port }}
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
+          {{- $repository := .image.repository }}
+          {{- $tag := .image.tag }}
+          {{- $pullPolicy := .image.pullPolicy }}
 
-        {{- with .Values.healthchecks }}
+          {{- if empty $repository }}
+            {{- $repository := $global.image.repository }}
+            {{- $tag := $.Values.global.image.tag }}
+            {{- $pullPolicy := $.Values.global.pullPolicy }}
+          image: '{{ $repository }}:{{ $tag }}'
+          imagePullPolicy: {{  default "" $pullPolicy | quote }}
+          {{- else }}
+          image: '{{ $repository }}:{{ $tag }}'
+          imagePullPolicy: {{  default "" $pullPolicy | quote }}
+          {{- end }}
+          ports:
+            - containerPort: {{ default $.Values.global.port .port }}
+
+          {{- $resources := coalesce .resources $global.resources "{}" }}
+          resources:
+            {{- if empty $resources}}
+            {{- .resources }}
+            {{- else }}
+            {{- toYaml $resources | nindent 12 }}
+            {{- end }}
+
+        {{- with .healthchecks }}
           {{- if .enabled  }}
           readinessProbe:
           {{- if eq .type "port" }}
             tcpSocket:
-              port: {{ $.Values.port }}
+              port: {{ .port }}
           {{- else if eq .type "command" }}
             exec:
               command:
@@ -76,9 +97,9 @@ spec:
             failureThreshold: {{ .livenessProbe.failureThreshold }}
           {{- end }}
         {{- end }}
-        {{- if .Values.volumes }}
+        {{- if .volumes }}
           volumeMounts:
-        {{- range .Values.volumes }}
+        {{- range .volumes }}
           {{- if .name }}
           - name: {{ .name }}
             mountPath: {{ .mountPath | quote }}
@@ -88,9 +109,9 @@ spec:
           {{- end }}
         {{- end }}
         {{- end }}
-    {{- if .Values.volumes }}
+    {{- if .volumes }}
       volumes:
-      {{- range .Values.volumes }}
+      {{- range .volumes }}
         {{- if .name }}
         - name: {{ .name }}
           {{- if .secretName }}
@@ -100,3 +121,4 @@ spec:
         {{- end }}
       {{- end }}
     {{- end }}
+{{- end }}

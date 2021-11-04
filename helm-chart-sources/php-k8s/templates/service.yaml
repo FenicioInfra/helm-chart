@@ -1,15 +1,18 @@
+{{- range .Values.apps }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "fullname" . }}-svc
+  name: {{ .appName }}
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
 spec:
   type: ClusterIP
   ports:
     - port: 9000
       targetPort: 9000
       protocol: TCP
-      name: {{ .Values.service.name }}
+      name: {{ .service.name }}
   selector:
-    name: {{ template "fullname" . }}
+    name: {{ .appName }}
+{{- end }}
