@@ -18,6 +18,10 @@ spec:
     metadata:
       labels:
         name: {{ .appName }}
+        {{- if .labels.environment }}
+        environment: {{ .labels.environment }}
+        {{- end }}
+        name: {{ template "fullname" . }}
     spec:
       {{- if .priority.enabled }}
       priorityClassName: {{ .priority.name }}

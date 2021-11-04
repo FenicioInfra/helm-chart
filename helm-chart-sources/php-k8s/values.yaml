@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 #
 global:
-  image: 
+  image:
     repository: ""
     tag: "0.1.0"
     pullPolicy: "IfNotPresent"
@@ -25,7 +25,7 @@ global:
     cpu:
       enabled: true
       averageUtilization: 70
-  # replicaCount is the number of pods to deploy 
+  # replicaCount is the number of pods to deploy
   # replicaCount will be ignored if autoscaling is enabled
   replicaCount: 1
   healthchecks:
@@ -90,16 +90,15 @@ global:
     port: 9113
     format: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"'
 
-
 apps:
-    # appName is the application's name
+  # appName is the application's name
   - appName: "php-1"
 
     # Cotainer image configuration
     # ignored if global image configuration
     # is set to a non empty value
     #
-    image: 
+    image:
       # repository where the image is located
       repository: "specific"
       # image tag
@@ -124,7 +123,7 @@ apps:
       cpu:
         enabled: true
         averageUtilization: 70
-    # replicaCount is the number of pods to deploy 
+    # replicaCount is the number of pods to deploy
     # replicaCount will be ignored if autoscaling is enabled
     replicaCount: 1
     healthchecks:
