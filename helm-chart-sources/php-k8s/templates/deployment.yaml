@@ -21,7 +21,7 @@ spec:
         {{- if .labels.environment }}
         environment: {{ .labels.environment }}
         {{- end }}
-        name: {{ template "fullname" . }}
+        name: {{ .appName }}
     spec:
       {{- if .priority.enabled }}
       priorityClassName: {{ .priority.name }}
@@ -59,16 +59,16 @@ spec:
           ports:
             - containerPort: {{ default $.Values.global.port .port }}
 
-          {{- $resources := coalesce .resources $global.resources "{}" }}
+          {{- $resources := default $global.resources .resources }}
           resources:
-            {{- if empty $resources}}
-            {{- .resources }}
+            {{- if empty $resources -}}
+            {{- print " {}" }}
             {{- else }}
             {{- toYaml $resources | nindent 12 }}
             {{- end }}
 
         {{- with .healthchecks }}
-          {{- if .enabled  }}
+          {{- if .enabled }}
           readinessProbe:
           {{- if eq .type "port" }}
             tcpSocket:
@@ -87,7 +87,7 @@ spec:
           livenessProbe:
           {{- if eq .type "port"}}
             tcpSocket:
-              port: {{ $.Values.port }}
+              port: {{ .port }}
           {{- else if eq .type "command" }}
             exec:
               command:

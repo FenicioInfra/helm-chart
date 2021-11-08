@@ -32,6 +32,7 @@ global:
     enabled: true
     # type: <port|command>
     type: port
+    port: 9000
     # healthcheck command. Ignored if type is set to 'port'
     command:
       - somecommand
@@ -55,6 +56,8 @@ global:
       mountPath: "/path/to/mount"
   env:
     RUN_COMMAND: php-fpm
+  labels:
+    environment: ""
   port: 9000
   service:
     name: php-fpm
@@ -79,12 +82,11 @@ global:
     host: example.com
     path: /
   resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
+    #limits: cpu: 100m
+      #memory: 128Mi
+    #requests:
+      #cpu: 100m
+      #memory: 128Mi
   metrics:
     enable: true
     port: 9113
@@ -130,6 +132,7 @@ apps:
       enabled: true
       # type: <port|command>
       type: port
+      port: 9000
       # healthcheck command. Ignored if type is set to 'port'
       command:
         - somecommand
@@ -153,6 +156,8 @@ apps:
         mountPath: "/path/to/mount"
     env:
       RUN_COMMAND: php-fpm
+    labels:
+      environment: ""
     port: 9000
     service:
       name: php-fpm
@@ -177,12 +182,12 @@ apps:
       host: example.com
       path: /
     resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+      #limits:
+        #cpu: 100m
+        #memory: 128Mi
+      #requests:
+        #cpu: 100m
+        #memory: 128Mi
     metrics:
       enable: true
       port: 9113
