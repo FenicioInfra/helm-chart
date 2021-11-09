@@ -2,6 +2,7 @@
 # # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+appName: "app"
 # Pod priority
 priority:
   enabled: false
@@ -10,6 +11,18 @@ priority:
 # Note: replicaCount will not be used
 # if autoscaling enabled
 replicaCount: 1
+autoscaling:
+  enabled: false
+  minReplicas: 5
+  maxReplicas: 20
+  # Scaling based on memory
+  memory:
+    enabled: true
+    averageUtilization: 70
+  # Scaling based on cpu
+  cpu:
+    enabled: true
+    averageUtilization: 70
 healthchecks:
   enabled: true
   # type: <port|command>
@@ -28,6 +41,13 @@ healthchecks:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 10
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 # volumes to mount in the pods
 volumes:
   - name: "secret1"
@@ -40,13 +60,12 @@ env:
 labels:
   environment: ""
 image:
-  php:
-    repository: ""
-    tag: 0.1.0
+  repository: ""
+  tag: 0.1.0
   pullPolicy: IfNotPresent
-port: 9000
 service:
   name: php-fpm
+  port: 9000
 ingress:
   enabled: true
   annotations:
@@ -67,25 +86,6 @@ ingress:
       #extra_parameters_location: somestring value;
   host: example.com
   path: /
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
-autoscaling:
-  enabled: false
-  minReplicas: 5
-  maxReplicas: 20
-  # Scaling based on memory
-  memory:
-    enabled: true
-    averageUtilization: 70
-  # Scaling based on cpu
-  cpu:
-    enabled: true
-    averageUtilization: 70
 metrics:
   enable: true
   port: 9113

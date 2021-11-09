@@ -1,36 +1,41 @@
+{{- $global := .Values.global }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ .Values.appName }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 spec:
-  {{- if not .Values.autoscaling.enabled }}
+  {{- $autoscaling := .Values.autoscaling | default $global.autoscaling }}
+  {{- if not $autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      name: {{ template "fullname" . }}
+      name: {{ .Values.appName }}
   template:
     metadata:
       labels:
-        {{- if .Values.labels.environment }}
-        environment: {{ .Values.labels.environment }}
+        {{- if (.Values.labels.environment | default $global.environment) }}
+        environment: {{ .Values.labels.environment | default $global.environment }}
         {{- end }}
-        name: {{ template "fullname" . }}
+        name: {{ .Values.appName }}
     spec:
-      {{- if .Values.priority.enabled }}
-      priorityClassName: {{ .Values.priority.name }}
+      {{- $priority := .Values.priority | default $global.priority }}
+      {{- if $priority.enabled }}
+      priorityClassName: {{ $priority.name }}
       {{- end }}
       containers:
-        - name: {{ template "fullname" . }}-phpfpm
-        {{- if or .Values.env .Values.envSecrets }}
+        - name: {{ .Values.appName }}
+        {{- $env := .Values.env | default $global.env }}
+        {{- $envSecrets := .Values.envSecrets | default $global.envSecrets }}
+        {{- if or $env $envSecrets }}
           env:
-          {{- range $key, $value := $.Values.env }}
+          {{- range $key, $value := $env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
           {{- end }}
-          {{- range $key, $secret := $.Values.envSecrets }}
+          {{- range $key, $secret := $envSecrets }}
             - name: {{ $key }}
               valueFrom:
                 secretKeyRef:
@@ -38,19 +43,25 @@ spec:
                   key: {{ (split "/" $secret)._1 }}
           {{- end }}
         {{- end }}
-          image: '{{ .Values.image.php.repository }}:{{ .Values.image.php.tag }}'
-          imagePullPolicy: {{  default "" .Values.image.pullPolicy | quote }}
+          {{- $image := .Values.image | default $global.image }}
+          {{- with $image }}
+          image: '{{ $image.repository }}:{{ $image.tag }}'
+          imagePullPolicy: {{  default "" $image.pullPolicy | quote }}
+          {{- end }}
           ports:
-            - containerPort: {{ .Values.port }}
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
+            - containerPort: {{ .Values.service.port | default $global.service.port }}
 
-        {{- with .Values.healthchecks }}
+          {{- $resources := .Values.resources | default $global.resources }}
+          resources:
+            {{- toYaml $resources | nindent 12 }}
+
+        {{- $healthchecks := .Values.healthchecks | default $global.healthchecks }}
+        {{- with $healthchecks }}
           {{- if .enabled  }}
           readinessProbe:
           {{- if eq .type "port" }}
             tcpSocket:
-              port: {{ $.Values.port }}
+              port: {{ $global.service.port }}
           {{- else if eq .type "command" }}
             exec:
               command:
@@ -65,7 +76,7 @@ spec:
           livenessProbe:
           {{- if eq .type "port"}}
             tcpSocket:
-              port: {{ $.Values.port }}
+              port: {{ $global.service.port }}
           {{- else if eq .type "command" }}
             exec:
               command:
@@ -79,9 +90,10 @@ spec:
             failureThreshold: {{ .livenessProbe.failureThreshold }}
           {{- end }}
         {{- end }}
-        {{- if .Values.volumes }}
+        {{- $volumes := .Values.volumes | default $global.volumes }}
+        {{- if $volumes }}
           volumeMounts:
-        {{- range .Values.volumes }}
+        {{- range $volumes }}
           {{- if .name }}
           - name: {{ .name }}
             mountPath: {{ .mountPath | quote }}
@@ -91,9 +103,9 @@ spec:
           {{- end }}
         {{- end }}
         {{- end }}
-    {{- if .Values.volumes }}
+    {{- if $volumes }}
       volumes:
-      {{- range .Values.volumes }}
+      {{- range $volumes }}
         {{- if .name }}
         - name: {{ .name }}
           {{- if .secretName }}
