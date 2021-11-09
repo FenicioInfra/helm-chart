@@ -1,16 +1,16 @@
-{{- range .Values.apps }}
-{{- if .autoscaling.enabled }}
----
+{{- $global := .Values.global }}
+{{- $autoscaling := .Values.autoscaling | default $global.autoscaling }}
+{{- if $autoscaling.enabled }}
 apiVersion: autoscaling/v2beta2 
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ .appName }} 
+  name: {{ .Values.appName }} 
 spec:
   scaleTargetRef:
     apiVersion: apps/v1 
     kind: Deployment 
-    name: {{ .appName }}
-  {{- with .autoscaling }}
+    name: {{ .Values.appName }}
+  {{- with $autoscaling }}
   minReplicas: {{ .minReplicas }} 
   maxReplicas: {{ .maxReplicas }}
   metrics: 

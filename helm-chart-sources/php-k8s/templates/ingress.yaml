@@ -1,37 +1,36 @@
-{{- range .Values.apps }}
-{{- if .ingress.enabled }}
----
+{{- $global := .Values.global }}
+{{- $ingress := .Values.ingress | default $global.ingress }}
+{{- if $ingress.enabled }}
 kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
   annotations:
-    {{- range $key, $value := .ingress.annotations }}
+    {{- range $key, $value := $ingress.annotations }}
     {{- if ne $key "snippets" }}
     {{ $key }}: {{ $value }}
     {{- end }}
     {{- end }}
     nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
     nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
-    nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ .appName }}-ingress
-  name: {{ .appName }}
-  namespace: {{ $.Release.Namespace }}
+    nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ .Values.appName }}-ingress
+  name: {{.Values.appName }}-ingress
+  namespace: {{ .Release.Namespace }}
 spec:
   tls:
     - hosts:
-       - {{ .ingress.host }}
-      {{- if .ingress.secretName  }}
-      secretName: {{ .ingress.secretName }}
+       - {{ $ingress.host }}
+      {{- if $ingress.secretName  }}
+      secretName: {{ $ingress.secretName }}
       {{- end }}
   rules:
-  - host: {{ .ingress.host }}
+  - host: {{ $ingress.host }}
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: {{ .appName }}
+            name: {{ .Values.appName }}
             port:
-              number: {{ .port }}
-{{- end }}
+              number: {{ .Values.service.port | default $global.service.port }}
 {{- end }}

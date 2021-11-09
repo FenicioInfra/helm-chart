@@ -1,40 +1,41 @@
-{{ $global := .Values.global }}
-{{- range .Values.apps }}
----
+{{- $global := .Values.global }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .appName }}
+  name: {{ .Values.appName }}
   labels:
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
 spec:
-  {{- if not .autoscaling.enabled }}
-  replicas: {{ .replicaCount }}
+  {{- $autoscaling := .Values.autoscaling | default $global.autoscaling }}
+  {{- if not $autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      name: {{ .appName }}
+      name: {{ .Values.appName }}
   template:
     metadata:
       labels:
-        name: {{ .appName }}
-        {{- if .labels.environment }}
-        environment: {{ .labels.environment }}
+        {{- if (.Values.labels.environment | default $global.environment) }}
+        environment: {{ .Values.labels.environment | default $global.environment }}
         {{- end }}
-        name: {{ .appName }}
+        name: {{ .Values.appName }}
     spec:
-      {{- if .priority.enabled }}
-      priorityClassName: {{ .priority.name }}
+      {{- $priority := .Values.priority | default $global.priority }}
+      {{- if $priority.enabled }}
+      priorityClassName: {{ $priority.name }}
       {{- end }}
       containers:
-        - name: cdn
-        {{- if or .env .envSecrets }}
+        - name: {{ .Values.appName }}
+        {{- $env := .Values.env | default $global.env }}
+        {{- $envSecrets := .Values.envSecrets | default $global.envSecrets }}
+        {{- if or $env $envSecrets }}
           env:
-          {{- range $key, $value := .env }}
+          {{- range $key, $value := $env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
           {{- end }}
-          {{- range $key, $secret := .envSecrets }}
+          {{- range $key, $secret := $envSecrets }}
             - name: {{ $key }}
               valueFrom:
                 secretKeyRef:
@@ -42,37 +43,25 @@ spec:
                   key: {{ (split "/" $secret)._1 }}
           {{- end }}
         {{- end }}
-          {{- $repository := .image.repository }}
-          {{- $tag := .image.tag }}
-          {{- $pullPolicy := .image.pullPolicy }}
-
-          {{- if empty $repository }}
-            {{- $repository := $global.image.repository }}
-            {{- $tag := $.Values.global.image.tag }}
-            {{- $pullPolicy := $.Values.global.pullPolicy }}
-          image: '{{ $repository }}:{{ $tag }}'
-          imagePullPolicy: {{  default "" $pullPolicy | quote }}
-          {{- else }}
-          image: '{{ $repository }}:{{ $tag }}'
-          imagePullPolicy: {{  default "" $pullPolicy | quote }}
+          {{- $image := .Values.image | default $global.image }}
+          {{- with $image }}
+          image: '{{ $image.repository }}:{{ $image.tag }}'
+          imagePullPolicy: {{  default "" $image.pullPolicy | quote }}
           {{- end }}
           ports:
-            - containerPort: {{ default $.Values.global.port .port }}
+            - containerPort: {{ .Values.service.port | default $global.service.port }}
 
-          {{- $resources := default $global.resources .resources }}
+          {{- $resources := .Values.resources | default $global.resources }}
           resources:
-            {{- if empty $resources -}}
-            {{- print " {}" }}
-            {{- else }}
             {{- toYaml $resources | nindent 12 }}
-            {{- end }}
 
-        {{- with .healthchecks }}
-          {{- if .enabled }}
+        {{- $healthchecks := .Values.healthchecks | default $global.healthchecks }}
+        {{- with $healthchecks }}
+          {{- if .enabled  }}
           readinessProbe:
           {{- if eq .type "port" }}
             tcpSocket:
-              port: {{ .port }}
+              port: {{ $global.service.port }}
           {{- else if eq .type "command" }}
             exec:
               command:
@@ -87,7 +76,7 @@ spec:
           livenessProbe:
           {{- if eq .type "port"}}
             tcpSocket:
-              port: {{ .port }}
+              port: {{ $global.service.port }}
           {{- else if eq .type "command" }}
             exec:
               command:
@@ -101,9 +90,10 @@ spec:
             failureThreshold: {{ .livenessProbe.failureThreshold }}
           {{- end }}
         {{- end }}
-        {{- if .volumes }}
+        {{- $volumes := .Values.volumes | default $global.volumes }}
+        {{- if $volumes }}
           volumeMounts:
-        {{- range .volumes }}
+        {{- range $volumes }}
           {{- if .name }}
           - name: {{ .name }}
             mountPath: {{ .mountPath | quote }}
@@ -113,9 +103,9 @@ spec:
           {{- end }}
         {{- end }}
         {{- end }}
-    {{- if .volumes }}
+    {{- if $volumes }}
       volumes:
-      {{- range .volumes }}
+      {{- range $volumes }}
         {{- if .name }}
         - name: {{ .name }}
           {{- if .secretName }}
@@ -125,4 +115,3 @@ spec:
         {{- end }}
       {{- end }}
     {{- end }}
-{{- end }}
