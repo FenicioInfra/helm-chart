@@ -1,16 +1,18 @@
 {{- $global := .Values.global }}
+{{- $appName := .Values.appName | default $global.appName }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.appName }}
+  name: {{ $appName }}
   labels:
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
 spec:
   type: ClusterIP
+  {{- $service := .Values.service | default $global.service }}
   ports:
-    - port: {{ .Values.service.port | default $global.service.port }}
-      targetPort: {{ .Values.service.port | default $global.service.port }}
+    - port: {{ $service.port }}
+      targetPort: {{ $service.port }}
       protocol: TCP
-      name: {{ .service.name }}
+      name: {{ $service.name }}
   selector:
-    name: {{ .Values.appName }}
+    name: {{ $appName }}

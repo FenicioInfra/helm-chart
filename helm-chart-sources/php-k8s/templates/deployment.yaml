@@ -2,7 +2,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.appName }}
+  {{- $appName := .Values.appName | default $global.appName }}
+  name: {{ $appName }}
   labels:
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
 spec:
@@ -12,21 +13,22 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      name: {{ .Values.appName }}
+      name: {{ $appName }}
   template:
     metadata:
+      {{- $labels := .Values.labels | default  $global.labels }}
       labels:
-        {{- if (.Values.labels.environment | default $global.environment) }}
-        environment: {{ .Values.labels.environment | default $global.environment }}
+        {{- if $labels }}
+        environment: {{ $labels.environment }}
         {{- end }}
-        name: {{ .Values.appName }}
+        name: {{ $appName }}
     spec:
       {{- $priority := .Values.priority | default $global.priority }}
       {{- if $priority.enabled }}
       priorityClassName: {{ $priority.name }}
       {{- end }}
       containers:
-        - name: {{ .Values.appName }}
+        - name: {{ $appName }}
         {{- $env := .Values.env | default $global.env }}
         {{- $envSecrets := .Values.envSecrets | default $global.envSecrets }}
         {{- if or $env $envSecrets }}
@@ -48,10 +50,13 @@ spec:
           image: '{{ $image.repository }}:{{ $image.tag }}'
           imagePullPolicy: {{  default "" $image.pullPolicy | quote }}
           {{- end }}
+          {{- $service := .Values.service | default $global.service }}
+          {{- if $service }}
           ports:
-            - containerPort: {{ .Values.service.port | default $global.service.port }}
+            - containerPort: {{ $service.port }}
+          {{- end }}
 
-          {{- $resources := .Values.resources | default $global.resources }}
+          {{- $resources := .Values.resources | default $global.resources | default "" }}
           resources:
             {{- toYaml $resources | nindent 12 }}
 
@@ -61,7 +66,7 @@ spec:
           readinessProbe:
           {{- if eq .type "port" }}
             tcpSocket:
-              port: {{ $global.service.port }}
+              port: {{ $service.port }}
           {{- else if eq .type "command" }}
             exec:
               command:
@@ -76,7 +81,7 @@ spec:
           livenessProbe:
           {{- if eq .type "port"}}
             tcpSocket:
-              port: {{ $global.service.port }}
+              port: {{ $service.port }}
           {{- else if eq .type "command" }}
             exec:
               command:
