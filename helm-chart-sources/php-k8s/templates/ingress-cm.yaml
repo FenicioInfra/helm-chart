@@ -1,10 +1,11 @@
 {{- $global := .Values.global }}
 {{- $ingress := .Values.ingress | default $global.ingress }}
 {{- if $ingress.enabled }}
+{{- $appName := .Values.appName | default $global.appName }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "fullname" . }}-ingress
+  name: {{ .Values.appName | default $global.appName  }}-ingress
   namespace: {{ .Release.Namespace }}
 data:
   SCRIPT_FILENAME: "/usr/src/app/index.php"
