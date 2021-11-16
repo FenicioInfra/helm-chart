@@ -9,7 +9,7 @@ metadata:
 spec:
   {{- $autoscaling := .Values.autoscaling | default $global.autoscaling }}
   {{- if not $autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.replicaCount | default $global.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
