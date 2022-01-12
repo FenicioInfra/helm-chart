@@ -1,6 +1,6 @@
 {{- $global := .Values.global }}
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   {{- $appName := .Values.appName | default $global.appName }}
   name: {{ $appName }}
@@ -120,3 +120,16 @@ spec:
         {{- end }}
       {{- end }}
     {{- end }}
+  strategy:
+    blueGreen: 
+      activeService: {{ $appName }}-active
+      previewService: {{ $appName }}-preview
+      autoPromotionEnabled: true
+      prePromotionAnalysis:
+        templates:
+        - templateName: {{ $appName }}-performanceTest
+        args:
+        - name: configmap-name
+          value: {{ $appName }}-performanceTest
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

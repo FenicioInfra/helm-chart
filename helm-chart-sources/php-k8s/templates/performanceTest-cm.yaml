@@ -1,0 +1,12 @@
+{{- $global := .Values.global }}
+{{- $perfTest := .Values.performanceTests | default $global.performanceTests }}
+{{- if $perfTest.enabled }}
+{{- $appName := .Values.appName | default $global.appName }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $appName }}-performanceTest
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- (.Files.Glob "performanceTest/*").AsConfig | nindent 2 }}
+{{- end}}

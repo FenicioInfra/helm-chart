@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $appName }}
+  name: {{ $appName }}-active
   labels:
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
 spec:
@@ -16,3 +16,23 @@ spec:
       name: {{ $service.name }}
   selector:
     name: {{ $appName }}
+    release: {{ .Release.Name }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $appName }}-preview
+  labels:
+    chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
+spec:
+  type: ClusterIP
+  {{- $service := .Values.service | default $global.service }}
+  ports:
+    - port: {{ $service.port }}
+      targetPort: {{ $service.port }}
+      protocol: TCP
+      name: {{ $service.name }}
+  selector:
+    name: {{ $appName }}
+    release: {{ .Release.Name }}

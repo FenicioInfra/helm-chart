@@ -1,0 +1,32 @@
+{{- $global := .Values.global }}
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  {{- $appName := .Values.appName | default $global.appName }}
+  name: {{ $appName }}-performanceTest
+spec:
+  args:
+  - name: configmap-name
+
+  metrics:
+  - name: k6
+    provider:
+      job:
+        spec:
+          backoffLimit: 1
+          template:
+            spec:
+              volumes:
+              - name: test
+                configMap:
+                  name: {{ $appName }}-performanceTest
+                  defaultMode: 420
+              containers:
+              - name: k6
+                image: loadimpact/k6
+                args: ["run",  "/tmp/performanceTest/script.js"]
+                volumeMounts:
+                    - name: test
+                      readOnly: true
+                      mountPath: /tmp/performanceTest
+              restartPolicy: Never
