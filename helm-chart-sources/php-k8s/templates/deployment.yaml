@@ -1,4 +1,6 @@
 {{- $global := .Values.global }}
+{{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
+{{- if not $performanceTests.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -120,3 +122,4 @@ spec:
         {{- end }}
       {{- end }}
     {{- end }}
+{{- end }}

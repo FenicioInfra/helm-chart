@@ -1,4 +1,6 @@
 {{- $global := .Values.global }}
+{{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
+{{- if $performanceTests.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
 metadata:
@@ -30,3 +32,4 @@ spec:
                       readOnly: true
                       mountPath: /tmp/performanceTest
               restartPolicy: Never
+{{- end }}

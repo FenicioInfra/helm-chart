@@ -1,4 +1,6 @@
 {{- $global := .Values.global }}
+{{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
+{{- if $performanceTests.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
@@ -133,3 +135,4 @@ spec:
           value: {{ $appName }}-performanceTest
   revisionHistoryLimit: 10
   progressDeadlineSeconds: 600
+{{- end }}

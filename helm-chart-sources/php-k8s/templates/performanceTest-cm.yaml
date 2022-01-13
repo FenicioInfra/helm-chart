@@ -1,6 +1,6 @@
 {{- $global := .Values.global }}
-{{- $perfTest := .Values.performanceTests | default $global.performanceTests }}
-{{- if $perfTest.enabled }}
+{{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
+{{- if $performanceTests.enabled }}
 {{- $appName := .Values.appName | default $global.appName }}
 apiVersion: v1
 kind: ConfigMap
