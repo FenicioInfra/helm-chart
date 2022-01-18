@@ -13,7 +13,7 @@ metadata:
     {{- end }}
     nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
     nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
-    nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ $appName }}
+    nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ $appName }}-ingress
   name: {{ $appName }}
   namespace: {{ .Release.Namespace }}
 spec:
