@@ -5,7 +5,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
 metadata:
   {{- $appName := .Values.appName | default $global.appName }}
-  name: {{ $appName }}-performanceTest
+  name: {{ $appName }}-performance-test
 spec:
   args:
   - name: configmap-name
@@ -21,7 +21,7 @@ spec:
               volumes:
               - name: test
                 configMap:
-                  name: {{ $appName }}-performanceTest
+                  name: {{ $appName }}-performance-test
                   defaultMode: 420
               containers:
               - name: k6
