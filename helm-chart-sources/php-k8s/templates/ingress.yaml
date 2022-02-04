@@ -14,6 +14,10 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
     nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
     nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ $appName }}
+    {{- $whitelist := $ingress.whitelist_ip | default $global.whitelist_ip }}
+    {{- if $whitelist.enabled }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ join ", " $whitelist.ip_list }}
+    {{- end }}
   name: {{ $appName }}
   namespace: {{ .Release.Namespace }}
 spec:

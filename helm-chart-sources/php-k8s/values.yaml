@@ -98,6 +98,17 @@ global:
   # ingress configuration
   ingress:
     enabled: true
+
+    # whitelist_ip annotation for NGINX
+    whitelist_ip:
+      enabled: false
+      # ip-list is an array of ips
+      ip_list: []
+      # example:
+      # ip_list:
+      # - 1.1.1.1
+      # - 2.2.2.2
+
     # ingress annotations
     annotations:
       # ingress class
