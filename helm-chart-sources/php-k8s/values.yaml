@@ -146,3 +146,4 @@ global:
   performanceTests:
     # enable or disable performanceTests
     enabled: true
+    pathToTests: "performanceTest/"

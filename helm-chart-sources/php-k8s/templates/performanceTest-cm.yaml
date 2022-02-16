@@ -8,5 +8,6 @@ metadata:
   name: {{ $appName }}-performance-test
   namespace: {{ .Release.Namespace }}
 data:
-  {{- (.Files.Glob "performanceTest/*").AsConfig | nindent 2 }}
+  {{ $path := printf "%s%s" $performanceTests.pathToTests "*"}}
+  {{- (.Files.Glob $path).AsConfig | nindent 2 }}
 {{- end}}
