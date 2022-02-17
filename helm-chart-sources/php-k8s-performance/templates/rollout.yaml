@@ -129,10 +129,10 @@ spec:
       autoPromotionEnabled: true
       prePromotionAnalysis:
         templates:
-        - templateName: {{ $appName }}-performanceTest
+        - templateName: {{ $appName }}-performance-test
         args:
         - name: configmap-name
-          value: {{ $appName }}-performanceTest
+          value: {{ $appName }}-performance-test
   revisionHistoryLimit: 10
   progressDeadlineSeconds: 600
 {{- end }}
