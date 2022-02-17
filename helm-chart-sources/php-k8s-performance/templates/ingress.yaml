@@ -1,0 +1,42 @@
+{{- $global := .Values.global }}
+{{- $ingress := .Values.ingress | default $global.ingress }}
+{{- if $ingress.enabled }}
+{{- $appName := .Values.appName | default $global.appName }}
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  annotations:
+    {{- range $key, $value := $ingress.annotations }}
+    {{- if ne $key "snippets" }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
+    nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
+    nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ $appName }}
+    {{- $whitelist := $ingress.whitelist_ip | default $global.whitelist_ip }}
+    {{- if $whitelist.enabled }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ join ", " $whitelist.ip_list }}
+    {{- end }}
+  name: {{ $appName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  tls:
+    - hosts:
+       - {{ $ingress.host }}
+      {{- if $ingress.secretName  }}
+      secretName: {{ $ingress.secretName }}
+      {{- end }}
+  rules:
+  - host: {{ $ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $appName }}
+            {{- $service := .Values.service | default $global.service }}
+            port:
+              number: {{ $service.port }}
+{{- end }}

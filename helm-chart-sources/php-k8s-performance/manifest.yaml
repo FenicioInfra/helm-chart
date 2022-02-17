@@ -1,0 +1,254 @@
+---
+# Source: php-k8s/templates/ingress-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-ingress
+  namespace: development-cdn
+data:
+  SCRIPT_FILENAME: "/usr/src/app/index.php"
+---
+# Source: php-k8s/templates/performanceTest-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-performanceTest
+  namespace: development-cdn
+data:
+  config.json: |
+    {
+        "url": "something"
+    }
+  requests.json: |
+    {
+        "request-1": "value"
+    }
+  script.js: |
+    import http from 'k6/http';
+    import {SharedArray} from 'k6/data'
+    import {check} from 'k6';
+    import {sleep} from 'k6';
+  
+    const config = JSON.parse(open('./config.json'));
+  
+    const requests = SharedArray('test-data', function () {
+      let raw_requests = JSON.parse(open("./requests.json")).requests;
+  
+      for (let request of raw_requests) {
+        request['body'] = JSON.parse(open(request.body_file));
+        request['response'] = JSON.parse(open(request.response_file));
+      }
+      return raw_requests;
+    });
+  
+    export const options = {
+      // httpDebug: 'full',
+      thresholds: {
+        http_req_duration: ["p(95)<" + config.thresholds.http_req_duration], // 95% of requests should be below 200ms
+      },
+      stages: [
+  
+        {duration: '2m', target: 100}, // below normal load
+  
+        {duration: '5m', target: 100},
+  
+        {duration: '2m', target: 200}, // normal load
+  
+        {duration: '5m', target: 200},
+  
+        {duration: '2m', target: 300}, // around the breaking point
+  
+        {duration: '5m', target: 300},
+  
+        {duration: '2m', target: 400}, // beyond the breaking point
+  
+        {duration: '5m', target: 400},
+  
+        {duration: '10m', target: 0}, // scale down. Recovery stage.
+  
+      ],
+    };
+  
+    export default function () {
+      const req = requests[Math.floor(Math.random() * requests.length)];
+      const params = {
+        headers: req.headers
+      };
+  
+      // creation of the checks
+      var checks = {};
+      for (let validation of config.validations) {
+        switch (validation.type) {
+          case "status_code":
+            checks['is status code ' + validation.value] = (r) => r.status === 200;
+            break;
+  
+          case "response_body":
+            checks['verify response body'] = (r) => r.body.includes(JSON.stringify(req.response));
+            break;
+        }
+      }
+  
+      const res = http.post(config.url, JSON.stringify(req.body), params);
+      check(res, checks);
+      sleep(1);
+    }
+---
+# Source: php-k8s/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-active 
+  labels:
+    chart: "php-k8s-3.0.0"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+      name: php-fpm
+  selector:
+    name: app
+    release: php-app
+---
+# Source: php-k8s/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-preview
+  labels:
+    chart: "php-k8s-3.0.0"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+      name: php-fpm
+  selector:
+    name: app
+    release: php-app
+---
+# Source: php-k8s/templates/ingress.yaml
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
+    nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
+    nginx.ingress.kubernetes.io/fastcgi-params-configmap: app
+  name: app
+  namespace: development-cdn
+spec:
+  tls:
+    - hosts:
+       - example.com
+  rules:
+  - host: example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app
+            port:
+              number: 9000
+---
+# Source: php-k8s/templates/analysisTemplate.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: app-performanceTest
+spec:
+  args:
+  - name: configmap-name
+
+  metrics:
+  - name: k6
+    provider:
+      job:
+        spec:
+          backoffLimit: 1
+          template:
+            spec:
+              volumes:
+              - name: test
+                configMap:
+                  name: app-performanceTest
+                  defaultMode: 420
+              containers:
+              - name: k6
+                image: loadimpact/k6
+                args: ["run",  "/tmp/performanceTest/script.js"]
+                volumeMounts:
+                    - name: test
+                      readOnly: true
+                      mountPath: /tmp/performanceTest
+              restartPolicy: Never
+---
+# Source: php-k8s/templates/rollout.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: app
+  labels:
+    chart: "php-k8s-3.0.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: app
+  template:
+    metadata:
+      labels:
+        environment: development
+        name: app
+    spec:
+      containers:
+        - name: app
+          env:
+            - name: RUN_COMMAND
+              value: "php-fpm"
+          image: ':0.1.0'
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 9000
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          volumeMounts:
+      volumes:
+  strategy:
+    blueGreen: 
+      activeService: app-active
+      previewService: app-preview
+      autoPromotionEnabled: true
+      prePromotionAnalysis:
+        templates:
+        - templateName: app-performanceTest
+        args:
+        - name: configmap-name
+          value: app-performanceTest
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

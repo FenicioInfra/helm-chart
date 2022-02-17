@@ -1,0 +1,41 @@
+{{- $global := .Values.global }}
+{{- $appName := .Values.appName | default $global.appName }}
+{{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $appName }}{{ if $performanceTests.enabled }}-active {{ end }}
+  labels:
+    chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
+spec:
+  type: ClusterIP
+  {{- $service := .Values.service | default $global.service }}
+  ports:
+    - port: {{ $service.port }}
+      targetPort: {{ $service.port }}
+      protocol: TCP
+      name: {{ $service.name }}
+  selector:
+    name: {{ $appName }}
+    release: {{ .Release.Name }}
+
+{{- if $performanceTests.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $appName }}-preview
+  labels:
+    chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
+spec:
+  type: ClusterIP
+  {{- $service := .Values.service | default $global.service }}
+  ports:
+    - port: {{ $service.port }}
+      targetPort: {{ $service.port }}
+      protocol: TCP
+      name: {{ $service.name }}
+  selector:
+    name: {{ $appName }}
+    release: {{ .Release.Name }}
+{{- end }}
