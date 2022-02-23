@@ -8,6 +8,19 @@ metadata:
   name: {{ $appName }}-performance-test
   namespace: {{ .Release.Namespace }}
 data:
-  {{ $path := printf "%s%s" $performanceTests.pathToTests "*"}}
-  {{- (.Files.Glob $path).AsConfig | nindent 2 }}
+  config.json: |
+    {{- $performanceTests.performance_config | nindent 4 }}
+
+  payload.json: |
+    {{- $performanceTests.performance_payload | nindent 4 }}
+
+  requests.json: |
+    {{- $performanceTests.performance_requests | nindent 4 }}
+
+  response-body.json: |
+    {{- $performanceTests.performance_response_body | nindent 4 }}
+
+  script.js: |
+    {{- $performanceTests.performance_script | nindent 4 }}
+
 {{- end}}

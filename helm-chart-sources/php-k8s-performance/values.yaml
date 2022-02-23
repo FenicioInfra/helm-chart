@@ -143,8 +143,3 @@ global:
   performanceTests:
     # enable or disable performanceTests
     enabled: true
-    
-    # pathToTests is the relative path to the directory
-    # that contains all the configuration files
-    # for executing the preformance test.
-    pathToTests: "performanceTest/"
