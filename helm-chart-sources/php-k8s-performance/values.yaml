@@ -142,4 +142,4 @@ global:
   # uses Blue Green strategy
   performanceTests:
     # enable or disable performanceTests
-    enabled: true
+    enabled: false
