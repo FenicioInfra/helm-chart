@@ -8,19 +8,24 @@ metadata:
   name: {{ $appName }}-performance-test
   namespace: {{ .Release.Namespace }}
 data:
+  {{- $config := .Values.performance_config | default $global.performance_config }}
+  {{- $payload := .Values.performance_payload | default $global.performance_payload }}
+  {{- $requests := .Values.performance_requests | default $global.performance_requests }}
+  {{- $response_body := .Values.performance_response_body | default $global.performance_response_body }}
+  {{- $script := .Values.performance_script | default $global.performance_script }}
+
   config.json: |
-    {{- $performanceTests.performance_config | nindent 4 }}
+    {{- $config | nindent 4}}
 
   payload.json: |
-    {{- $performanceTests.performance_payload | nindent 4 }}
+    {{- $payload | nindent 4 }}
 
   requests.json: |
-    {{- $performanceTests.performance_requests | nindent 4 }}
+    {{- $requests | nindent 4 }}
 
   response-body.json: |
-    {{- $performanceTests.performance_response_body | nindent 4 }}
+    {{- $response_body | nindent 4 }}
 
   script.js: |
-    {{- $performanceTests.performance_script | nindent 4 }}
-
+    {{- $script | nindent 4}}
 {{- end}}
