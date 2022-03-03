@@ -36,7 +36,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ $appName }}{{ if $performanceTests.enabled }}-active {{ end }}
+            name: {{ $appName }}{{ if $performanceTests.enabled }}-preview {{ end }}
             {{- $service := .Values.service | default $global.service }}
             port:
               number: {{ $service.port }}
