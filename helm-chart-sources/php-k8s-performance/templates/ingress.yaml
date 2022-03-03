@@ -2,6 +2,7 @@
 {{- $ingress := .Values.ingress | default $global.ingress }}
 {{- if $ingress.enabled }}
 {{- $appName := .Values.appName | default $global.appName }}
+{{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
 kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -35,7 +36,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ $appName }}
+            name: {{ $appName }}{{ if $performanceTests.enabled }}-active {{ end }}
             {{- $service := .Values.service | default $global.service }}
             port:
               number: {{ $service.port }}

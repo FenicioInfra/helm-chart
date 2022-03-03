@@ -19,7 +19,7 @@ spec:
           template:
             spec:
               volumes:
-              - name: test
+              - name: script
                 configMap:
                   name: {{ $appName }}-performance-test
                   defaultMode: 420
@@ -28,7 +28,7 @@ spec:
                 image: loadimpact/k6
                 args: ["run",  "/tmp/performanceTest/script.js"]
                 volumeMounts:
-                    - name: test
+                    - name: script
                       readOnly: true
                       mountPath: /tmp/performanceTest
               restartPolicy: Never
