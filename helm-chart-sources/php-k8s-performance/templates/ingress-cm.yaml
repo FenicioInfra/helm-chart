@@ -5,7 +5,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.appName | default $global.appName  }}-ingress
+  name: {{ .Values.appName | default $global.appName  }}
   namespace: {{ .Release.Namespace }}
 data:
   SCRIPT_FILENAME: "/usr/src/app/index.php"
