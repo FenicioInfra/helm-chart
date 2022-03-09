@@ -3,6 +3,7 @@
 {{- if $ingress.enabled }}
 {{- $appName := .Values.appName | default $global.appName }}
 {{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
+
 kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -29,15 +30,29 @@ spec:
       secretName: {{ $ingress.secretName }}
       {{- end }}
   rules:
-  - host: {{ $ingress.host }}
+  - host: {{ $ingress.host | quote }}
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: {{ $appName }}{{ if $performanceTests.enabled }}-preview {{ end }}
+            name: {{ $appName }}{{ if $performanceTests.enabled }}-active {{ end }}
             {{- $service := .Values.service | default $global.service }}
             port:
               number: {{ $service.port }}
+
+  {{- if $performanceTests.enabled }}
+  - host: {{ $ingress.host_preview | quote }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $appName }}-preview
+            {{- $service := .Values.service | default $global.service }}
+            port:
+              number: {{ $service.port }}
+  {{- end }}
 {{- end }}
