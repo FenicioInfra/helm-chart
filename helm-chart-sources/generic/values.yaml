@@ -1,0 +1,131 @@
+
+global: 
+  # appName 
+  appName: "app"
+
+
+  # priority class
+  priority:
+    enabled: false
+    name: high-priority
+
+
+  # replicaCount is the number of replicas to deploy
+  # note if autoscaling enabled, replicaCount will
+  # be ignored
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    # minReplicas to deploy
+    minReplicas: 5
+    # maxReplicas sets the upper bound for autoscaling
+    maxReplicas: 20
+    # memory averageUtilization autoscaling
+    memory:
+      enabled: true
+      averageUtilization: 70
+    # cpu averageUtilization autoscaling
+    cpu:
+      enabled: true
+      averageUtilization: 70
+
+
+  # pod healthchecks
+  healthchecks: 
+    enabled: true
+    # type: <port|command>
+    type: port
+    # healthcheck command. Ignored if type is set to 'port'
+    command:
+      - somecommand
+      - arg1
+    readinessProbe:
+      initialDelaySeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
+    livenessProbe:
+      initialDelaySeconds: 10
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 10
+
+
+  # resources limits for pods
+  resources: 
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+
+  # volumes to mount in the pods
+  volumes: {}
+    #- name: ""
+      # secretName is the name of the secret to mount
+      #secretName: "mysecret-name"
+      # mountPath is the directory where the secret will be mounted
+      #mountPath: "/path/to/mount"
+
+
+  # environment variables
+  env: {}
+  #  RUN_COMMAND: php-fpm
+
+
+  # labels to add to pods
+  labels:
+    environment: "development"
+
+
+  # image sets the values for the container image
+  image:
+    repository: ""
+    tag: 0.1.0
+    pullPolicy: IfNotPresent
+
+
+  # service configuration
+  service:
+    # name of the exposed port
+    name: generic
+    # port number to listen
+    port: 9000
+
+
+  # ingress configuration
+  ingress:
+    enabled: true
+
+    # whitelist_ip annotation for NGINX
+    whitelist_ip:
+      enabled: false
+      # ip-list is an array of ips
+      ip_list: []
+      # example:
+      # ip_list:
+      # - 1.1.1.1
+      # - 2.2.2.2
+
+    # ingress annotations
+    annotations:
+      # ingress class
+      kubernetes.io/ingress.class: nginx
+      # snippets for nginx
+      snippets:
+        extra_parameters_snippets: tcp_nopush on; tcp_nodelay on;
+        cache_enabled: true
+        cache_config:
+          expires: 2d
+        #extra_parameters_location: somestring value;
+    host: example.com
+    path: /
+
+
+  # Prometheus metrics
+  metrics:
+    enable: false
+    port: 9113
+    format: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"'
