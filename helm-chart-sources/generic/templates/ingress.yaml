@@ -2,6 +2,7 @@
 {{- $ingress := .Values.ingress | default $global.ingress }}
 {{- if $ingress.enabled }}
 {{- $appName := .Values.appName | default $global.appName }}
+---
 kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -19,13 +20,17 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   tls:
+    {{- range $host := $ingress.hosts }}
     - hosts:
-       - {{ $ingress.host }}
-      {{- if $ingress.secretName  }}
-      secretName: {{ $ingress.secretName }}
+       - {{ $host.name }}
+      {{- if $host.secretName  }}
+      secretName: {{ $host.secretName }}
       {{- end }}
+    {{- end }}
   rules:
-  - host: {{ $ingress.host }}
+  {{- $service := .Values.service | default $global.service }}
+  {{- range $host := $ingress.hosts }}
+  - host: {{ $host.name }}
     http:
       paths:
       - path: /
@@ -33,7 +38,7 @@ spec:
         backend:
           service:
             name: {{ $appName }}
-            {{- $service := .Values.service | default $global.service }}
             port:
               number: {{ $service.port }}
+  {{- end }}
 {{- end }}

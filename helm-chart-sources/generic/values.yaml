@@ -120,9 +120,9 @@ global:
         cache_config:
           expires: 2d
         #extra_parameters_location: somestring value;
-    host: example.com
     path: /
-
+    hosts: 
+    - name: example.com
 
   # Prometheus metrics
   metrics:
