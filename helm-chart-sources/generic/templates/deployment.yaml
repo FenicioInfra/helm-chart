@@ -14,6 +14,7 @@ spec:
   selector:
     matchLabels:
       name: {{ $appName }}
+  revisionHistoryLimit: {{ .Values.historyLimit | default $global.historyLimit }}
   template:
     metadata:
       {{- $labels := .Values.labels | default  $global.labels }}

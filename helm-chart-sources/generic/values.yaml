@@ -9,7 +9,8 @@ global:
     enabled: false
     name: high-priority
 
-
+  # Número de replicaSets históricos conservados
+  historyLimit: 1
   # replicaCount is the number of replicas to deploy
   # note if autoscaling enabled, replicaCount will
   # be ignored
@@ -102,12 +103,12 @@ global:
     # whitelist_ip annotation for NGINX
     whitelist_ip:
       enabled: false
-      # ip-list is an array of ips
+      # ip-list is an array of cidr
       ip_list: []
       # example:
       # ip_list:
-      # - 1.1.1.1
-      # - 2.2.2.2
+      # - 1.1.1.1/32
+      # - 2.2.2.0/24
 
     # ingress annotations
     annotations:
