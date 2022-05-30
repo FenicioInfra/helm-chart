@@ -26,7 +26,7 @@ spec:
               containers:
               - name: k6
                 image: loadimpact/k6
-                args: ["run",  "/tmp/performanceTest/script.js"]
+                args: ["run",  "/tmp/performanceTest/tests.js"]
                 volumeMounts:
                     - name: script
                       readOnly: true
