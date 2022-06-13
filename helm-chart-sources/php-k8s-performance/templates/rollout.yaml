@@ -93,16 +93,6 @@ spec:
             failureThreshold: {{ .livenessProbe.failureThreshold }}
           {{- end }}
         {{- end }}
-        {{- $nodeSelector := .Values.nodeSelector | default $global.nodeSelector }}
-        {{- if $nodeSelector.enabled }}
-        nodeSelector:
-          role: {{ $nodeSelector.label }}
-        tolerations:
-          - key: role
-            operator: Equal
-            value: {{ $nodeSelector.label }}
-            effect: NoSchedule
-        {{- end }}
         {{- $priority := .Values.priority | default $global.priority }}
         {{- if $priority.enabled }}
         priorityClassName: {{ $priority.name }}
@@ -120,6 +110,16 @@ spec:
           {{- end }}
         {{- end }}
         {{- end }}
+      {{- $nodeSelector := .Values.nodeSelector | default $global.nodeSelector }}
+      {{- if $nodeSelector.enabled }}
+      nodeSelector:
+        role: {{ $nodeSelector.label }}
+      tolerations:
+        - key: role
+          operator: Equal
+          value: {{ $nodeSelector.label }}
+          effect: NoSchedule
+      {{- end }}
     {{- if $volumes }}
       volumes:
       {{- range $volumes }}
