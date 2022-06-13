@@ -25,10 +25,6 @@ spec:
         {{- end }}
         name: {{ $appName }}
     spec:
-      {{- $priority := .Values.priority | default $global.priority }}
-      {{- if $priority.enabled }}
-      priorityClassName: {{ $priority.name }}
-      {{- end }}
       containers:
         - name: {{ $appName }}
         {{- $env := .Values.env | default $global.env }}
@@ -97,6 +93,20 @@ spec:
             failureThreshold: {{ .livenessProbe.failureThreshold }}
           {{- end }}
         {{- end }}
+        {{- $nodeSelector := .Values.nodeSelector | default $global.nodeSelector }}
+        {{- if $nodeSelector.enabled }}
+        nodeSelector:
+          role: {{ $nodeSelector.label }}
+        tolerations:
+          - key: role
+            operator: Equal
+            value: {{ $nodeSelector.label }}
+            effect: NoSchedule
+        {{- end }}
+        {{- $priority := .Values.priority | default $global.priority }}
+        {{- if $priority.enabled }}
+        priorityClassName: {{ $priority.name }}
+        {{- end }}
         {{- $volumes := .Values.volumes | default $global.volumes }}
         {{- if $volumes }}
           volumeMounts:
@@ -121,16 +131,6 @@ spec:
           {{- end }}
         {{- end }}
       {{- end }}
-    {{- end }}
-    {{- $nodeSelector := .Values.nodeSelector | default $global.nodeSelector }}
-    {{- if $nodeSelector.enabled }}
-      nodeSelector:
-        role: {{ $nodeSelector.label }}
-      tolerations:
-        - key: role
-          operator: Equal
-          value: {{ $nodeSelector.label }}
-          effect: NoSchedule
     {{- end }}
   strategy:
     blueGreen: 
