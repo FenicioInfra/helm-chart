@@ -93,10 +93,6 @@ spec:
             failureThreshold: {{ .livenessProbe.failureThreshold }}
           {{- end }}
         {{- end }}
-        {{- $priority := .Values.priority | default $global.priority }}
-        {{- if $priority.enabled }}
-        priorityClassName: {{ $priority.name }}
-        {{- end }}
         {{- $volumes := .Values.volumes | default $global.volumes }}
         {{- if $volumes }}
           volumeMounts:
@@ -119,6 +115,10 @@ spec:
           operator: Equal
           value: {{ $nodeSelector.label }}
           effect: NoSchedule
+      {{- end }}
+      {{- $priority := .Values.priority | default $global.priority }}
+      {{- if $priority.enabled }}
+      priorityClassName: {{ $priority.name }}
       {{- end }}
     {{- if $volumes }}
       volumes:
