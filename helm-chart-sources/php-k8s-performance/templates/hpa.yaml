@@ -1,34 +1,41 @@
 {{- $global := .Values.global }}
 {{- $autoscaling := .Values.autoscaling | default $global.autoscaling }}
-{{- if $autoscaling.enabled }}
 {{- $appName := .Values.appName | default $global.appName }}
+{{- if $autoscaling.enabled }}
 apiVersion: autoscaling/v2beta2 
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ $appName }} 
 spec:
   scaleTargetRef:
+    {{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
+    {{- if $performanceTests.enabled }}
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
     name: {{ $appName }}
+    {{- else }}
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $appName }}
+    {{- end }}
   {{- with $autoscaling }}
   minReplicas: {{ .minReplicas }} 
   maxReplicas: {{ .maxReplicas }}
-  metrics: 
+  metrics:
   {{- if .memory.enabled }}
   - type: Resource
     resource:
       name: memory
       target:
-        type: Utilization 
-        averageUtilization: {{ .memory.averageUtilization }} 
+        type: Utilization
+        averageUtilization: {{ .memory.averageUtilization }}
   {{- end }}
   {{- if .cpu.enabled }}
   - type: Resource
     resource:
       name: cpu
       target:
-        type: Utilization 
+        type: Utilization
         averageUtilization: {{ .cpu.averageUtilization }}
   {{- end }}
   {{- end }}
