@@ -13,6 +13,7 @@ spec:
   {{- if not $autoscaling.enabled }}
   replicas: {{ .Values.replicaCount | default $global.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: {{ .Values.historyLimit | default $global.historyLimit }}
   selector:
     matchLabels:
       name: {{ $appName }}

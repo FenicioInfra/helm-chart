@@ -11,8 +11,9 @@ global:
   nodeSelector:
     enabled: false
     label: production
-
-# replicaCount is the number of replicas to deploy
+  # Número de replicaSets históricos conservados
+  historyLimit: 1
+  # replicaCount is the number of replicas to deploy
   # note if autoscaling enabled, replicaCount will
   # be ignored
   replicaCount: 1
