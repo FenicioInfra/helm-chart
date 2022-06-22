@@ -8,7 +8,9 @@ global:
   priority:
     enabled: false
     name: high-priority
-
+  nodeSelector:
+    enabled: false
+    label: production
   # Número de replicaSets históricos conservados
   historyLimit: 1
   # replicaCount is the number of replicas to deploy

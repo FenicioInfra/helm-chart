@@ -28,6 +28,16 @@ spec:
       {{- if $priority.enabled }}
       priorityClassName: {{ $priority.name }}
       {{- end }}
+    {{- $nodeSelector := .Values.nodeSelector | default $global.nodeSelector }}
+    {{- if $nodeSelector.enabled }}
+      nodeSelector:
+        role: {{ $nodeSelector.label }}
+      tolerations:
+        - key: role
+          operator: Equal
+          value: {{ $nodeSelector.label }}
+          effect: NoSchedule
+    {{- end }}
       containers:
         - name: {{ $appName }}
         {{- $env := .Values.env | default $global.env }}
