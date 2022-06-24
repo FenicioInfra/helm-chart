@@ -1,0 +1,22 @@
+{{- range $k1, $v1 := .Values.devroles }}
+{{- range $k2, $v2 := $v1 }}
+{{- if $v2 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rb-devs-{{ $k1 }}
+  namespace: {{ $k2 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: devs-{{ $k1 }}
+subjects:
+{{- range $v2 }}
+- kind: ServiceAccount
+  namespace: users
+  name: {{ . }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

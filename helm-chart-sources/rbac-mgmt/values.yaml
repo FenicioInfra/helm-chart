@@ -1,0 +1,23 @@
+---
+users: {}
+
+admins: {}
+
+devroles:
+  restricted:
+    testing: {}
+    staging: {}
+    production: {} 
+  full:
+    testing: {}
+    staging: {}
+    production: {}
+  
+infraroles:
+  infra-full: {}
+  infra-restricted: {}
+
+
+
+
+

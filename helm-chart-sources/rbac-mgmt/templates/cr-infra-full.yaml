@@ -1,0 +1,26 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: infra-full
+rules:
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["*"]
+- apiGroups: ["apps"]
+  resources: ["daemonsets", "deployments", "replicasets", "statefulsets"]
+  verbs: ["*"]
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
+  verbs: ["*"]
+- apiGroups:
+    - cert-manager.io
+    - operator.victoriametrics.com
+    - networking.k8s.io
+    - argoproj.io
+    - storage.k8s.io
+    - operators.coreos.com
+    - metrics.k8s.io
+    - acme.cert-manager.io
+  resources: ["*"]
+  verbs: ["*"]

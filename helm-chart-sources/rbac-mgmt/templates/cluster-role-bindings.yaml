@@ -1,0 +1,19 @@
+{{- range $k1, $v1 := .Values.infraroles }}
+{{- if $v1 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: crb-{{ $k1 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $k1 }}
+subjects:
+{{- range $v1 }}
+- apiGroup: rbac.authorization.k8s.io
+  kind: ServiceAccount
+  name: {{ . }}
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,17 @@
+{{- if .Values.admins }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: crb-admins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+{{- range .Values.admins }}
+- apiGroup: rbac.authorization.k8s.io
+  kind: ServiceAccount
+  name: {{ . }}
+{{- end }}
+{{- end }}
