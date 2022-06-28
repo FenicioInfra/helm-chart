@@ -38,5 +38,17 @@ spec:
         type: Utilization
         averageUtilization: {{ .cpu.averageUtilization }}
   {{- end }}
-  {{- end }}
+  {{- if .behavior.enabled }}
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: {{ .behavior.scaleDown.stabilizationWindowSeconds }}
+      policies:
+      {{-  toYaml .behavior.scaleDown.policies | nindent 8 }}
+    scaleUp:
+      stabilizationWindowSeconds: {{ .behavior.scaleUp.stabilizationWindowSeconds }}
+      policies:
+      {{- toYaml .behavior.scaleUp.policies | nindent 8 }}
+      selectPolicy: {{ .behavior.scaleUp.selectPolicy }}
+   {{- end }}   
+{{- end }}
 {{- end }}
