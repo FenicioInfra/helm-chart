@@ -87,6 +87,8 @@ global:
     - name: ""
       # secretName is the name of the secret to mount
       secretName: "mysecret-name"
+      # configmapName - do not use it with secretName
+      configmapName: "myconfigmap-name"
       # mountPath is the directory where the secret will be mounted
       mountPath: "/path/to/mount"
 
@@ -170,3 +172,12 @@ global:
   performanceTests:
     # enable or disable performanceTests
     enabled: false
+
+  # use www-php-conf configmap
+  phpFpmConfig:
+    enabled: false
+    avgWorkerMemory: 100
+    pm: dynamic
+    additionalWwwConfigs: {} #|-
+      #addiontional = 1
+      #www.configuration = example

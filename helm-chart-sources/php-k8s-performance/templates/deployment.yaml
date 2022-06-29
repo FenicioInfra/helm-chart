@@ -119,6 +119,10 @@ spec:
           secret:
             secretName: {{ .secretName }}
           {{- end }}
+          {{- if .configmapName }}
+          configMap:
+            name: {{ .configmapName }}
+          {{- end }}          
         {{- end }}
       {{- end }}
     {{- end }}
