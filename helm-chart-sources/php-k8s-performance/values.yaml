@@ -91,6 +91,8 @@ global:
       configmapName: "myconfigmap-name"
       # mountPath is the directory where the secret will be mounted
       mountPath: "/path/to/mount"
+      # subPath - file name, use with configMapName
+      subPath: "file.conf"
 
 
   # environment variables

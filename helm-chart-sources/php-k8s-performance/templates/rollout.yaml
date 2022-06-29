@@ -104,6 +104,9 @@ spec:
           {{- if .name }}
           - name: {{ .name }}
             mountPath: {{ .mountPath | quote }}
+            {{- if .configmapName }}
+            subPath: {{ .subPath | quote }}
+            {{- end }}
             {{- if .secretName }}
             readOnly: true
             {{- end }}
