@@ -23,7 +23,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 user = 1001
 group = 0
 listen = {{ $.service.port | default ("9000") }}
-pm = dynamic
+pm = {{ $.phpFpmConfig.pm }}
 pm.max_children = {{ floor (divf $memoryLimitAvailable $avgWorkerMemory) | default ("3") }}
 pm.start_servers = {{ floor (divf $memoryRequestAvailable $avgWorkerMemory) | default ("2") }}
 pm.min_spare_servers = {{ floor (divf $memoryRequestAvailable $avgWorkerMemory) | default ("2") }}
