@@ -11,6 +11,7 @@ roleRef:
 subjects:
 {{- range .Values.admins }}
 - kind: ServiceAccount
+  namespace: users
   name: {{ . }}
 {{- end }}
 {{- end }}

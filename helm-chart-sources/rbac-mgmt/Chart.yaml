@@ -3,4 +3,4 @@ name: rbac-mgmt
 description: A Helm chart for Kubernetes RBAC Management.
 
 type: application
-version: 1.0.2
+version: 1.0.3
