@@ -1,5 +1,6 @@
 {{- $global := .Values.global }}
 {{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
+{{- $phpFpmConfig := .Values.phpFpmConfig | default $global.phpFpmConfig }}
 {{- if $performanceTests.enabled }}
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
@@ -8,6 +9,10 @@ metadata:
   name: {{ $appName }}
   labels:
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
+  annotations:
+  {{- if $phpFpmConfig.enabled }}
+    php-fpm-configmap: {{ print $phpFpmConfig | sha256sum }}
+  {{- end }}    
 spec:
   {{- $autoscaling := .Values.autoscaling | default $global.autoscaling }}
   {{- if not $autoscaling.enabled }}
