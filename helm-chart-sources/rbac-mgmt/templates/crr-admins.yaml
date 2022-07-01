@@ -10,8 +10,7 @@ roleRef:
   name: cluster-admin
 subjects:
 {{- range .Values.admins }}
-- apiGroup: rbac.authorization.k8s.io
-  kind: ServiceAccount
+- kind: ServiceAccount
   name: {{ . }}
 {{- end }}
 {{- end }}
