@@ -112,6 +112,29 @@ spec:
           {{- end }}
         {{- end }}
         {{- end }}
+        {{- $phpFpmExporter := .Values.phpFpmExporter | default $global.phpFpmExporter }}
+        {{- if $phpFpmExporter.enabled }}
+        - name: php-fpm-exporter
+          image: {{ $phpFpmExporter.image }}
+          ports:
+            - containerPort: 9253
+              protocol: TCP
+          env:
+            - name: PHP_FPM_SCRAPE_URI
+              value: tcp://127.0.0.1:9000/status
+            - name: PHP_FPM_LOG_LEVEL
+              value: info
+          resources:
+            limits:
+              cpu: "50m"
+              memory: 70Mi
+            requests:
+              cpu: "10m"
+              memory: 25Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+        {{- end }}
     {{- if $volumes }}
       volumes:
       {{- range $volumes }}
