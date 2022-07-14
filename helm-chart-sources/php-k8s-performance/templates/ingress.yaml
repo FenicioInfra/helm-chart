@@ -20,6 +20,13 @@ metadata:
     {{- if $whitelist.enabled }}
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ join ", " $whitelist.ip_list }}
     {{- end }}
+    {{- $phpFpmExporter := .Values.phpFpmExporter| default $global.phpFpmExporter }}
+    {{- if $phpFpmExporter.enabled }}
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location {{ $phpFpmExporter.statusPath }} {
+          return 403 {{ $phpFpmExporter.statusPath }};
+      }
+    {{- end }}
   name: {{ $appName }}
   namespace: {{ .Release.Namespace }}
 spec:
