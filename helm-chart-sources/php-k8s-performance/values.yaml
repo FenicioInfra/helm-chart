@@ -183,3 +183,9 @@ global:
     additionalWwwConfigs: {} #|-
       #addiontional = 1
       #www.configuration = example
+
+  phpFpmExporter:
+    enabled: false
+    image: "hipages/php-fpm_exporter:2.2.0"
+
+
