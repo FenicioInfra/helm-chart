@@ -9,10 +9,6 @@ metadata:
   name: {{ $appName }}
   labels:
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
-  annotations:
-  {{- if $phpFpmConfig.enabled }}
-    php-fpm-configmap: {{ print $phpFpmConfig | sha256sum }}
-  {{- end }}
 spec:
   {{- $autoscaling := .Values.autoscaling | default $global.autoscaling }}
   {{- if not $autoscaling.enabled }}
@@ -29,6 +25,9 @@ spec:
         environment: {{ $labels.environment }}
         {{- end }}
         name: {{ $appName }}
+      {{- if $phpFpmConfig.enabled }}
+        php-fpm-configmap: {{ print $phpFpmConfig | sha256sum }}
+      {{- end }}
     spec:
       {{- $priority := .Values.priority | default $global.priority }}
       {{- if $priority.enabled }}
