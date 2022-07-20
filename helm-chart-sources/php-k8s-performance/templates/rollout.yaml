@@ -118,16 +118,21 @@ spec:
           {{- end }}
         {{- end }}
         {{- end }}
-         {{- $phpFpmExporter := .Values.phpFpmExporter| default $global.phpFpmExporter }}
-      {{- if $phpFpmExporter.enabled }}
+        {{- $metrics := .Values.metrics| default $global.metrics }}
+        {{- if $metrics.enable }}
         - name: php-fpm-exporter
-          image: {{ $phpFpmExporter.image }}
+          image: {{ $metrics.image }}
           ports:
-            - containerPort: 9253
+            - containerPort: {{ $metrics.port }}
               protocol: TCP
           env:
             - name: PHP_FPM_SCRAPE_URI
-              value: tcp://127.0.0.1:9000/status
+              {{- $service := .Values.service | default $global.service }}
+              {{- if $service }}
+              value: tcp://127.0.0.1:{{ $service.port }}{{ $metrics.statusPath  }}
+              {{- else }}
+              value: tcp://127.0.0.1:9000{{ $metrics.statusPath  }}
+              {{- end }}
             - name: PHP_FPM_LOG_LEVEL
               value: info
           resources:
@@ -140,7 +145,7 @@ spec:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: Always
-         {{- end }}
+        {{- end }}
       {{- $nodeSelector := .Values.nodeSelector | default $global.nodeSelector }}
       {{- if $nodeSelector.enabled }}
       nodeSelector:

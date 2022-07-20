@@ -1,4 +1,5 @@
 {{- $global := .Values.global }}
+{{- $phpFpmConfig := .Values.phpFpmConfig | default $global.phpFpmConfig }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -6,154 +7,172 @@ metadata:
   name: {{ $appName }}
   labels:
     chart: "{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}"
+  annotations:
+  {{- if $phpFpmConfig.enabled }}
+  php-fpm-configmap: {{ print $phpFpmConfig | sha256sum }}
+  {{- end }}
 spec:
   {{- $autoscaling := .Values.autoscaling | default $global.autoscaling }}
-  {{- if not $autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount | default $global.replicaCount }}
-  {{- end }}
-  selector:
-    matchLabels:
-      name: {{ $appName }}
-  revisionHistoryLimit: {{ .Values.historyLimit | default $global.historyLimit }}
-  template:
-    metadata:
-      {{- $labels := .Values.labels | default  $global.labels }}
-      labels:
-        {{- if $labels }}
-        environment: {{ $labels.environment }}
-        {{- end }}
+    {{- if not $autoscaling.enabled }}
+    replicas: {{ .Values.replicaCount | default $global.replicaCount }}
+    {{- end }}
+    selector:
+      matchLabels:
         name: {{ $appName }}
-    spec:
-      {{- $priority := .Values.priority | default $global.priority }}
-      {{- if $priority.enabled }}
-      priorityClassName: {{ $priority.name }}
-      {{- end }}
-      containers:
-        - name: {{ $appName }}
-        {{- $env := .Values.env | default $global.env }}
-        {{- $envSecrets := .Values.envSecrets | default $global.envSecrets }}
-        {{- if or $env $envSecrets }}
-          env:
-          {{- $image := .Values.image | default $global.image }}
-            - name: APP_VERSION
-              value: {{ $image.tag }}          
-          {{- range $key, $value := $env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
+    template:
+      metadata:
+        {{- $labels := .Values.labels | default  $global.labels }}
+        labels:
+          {{- if $labels }}
+          environment: {{ $labels.environment }}
           {{- end }}
-          {{- range $key, $secret := $envSecrets }}
-            - name: {{ $key }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ (split "/" $secret)._0 }}
-                  key: {{ (split "/" $secret)._1 }}
-          {{- end }}
+          name: {{ $appName }}
+      spec:
+        {{- $priority := .Values.priority | default $global.priority }}
+        {{- if $priority.enabled }}
+        priorityClassName: {{ $priority.name }}
         {{- end }}
-          {{- $image := .Values.image | default $global.image }}
-          {{- with $image }}
-          image: '{{ $image.repository }}:{{ $image.tag }}'
-          imagePullPolicy: {{  default "" $image.pullPolicy | quote }}
-          {{- end }}
-          {{- $service := .Values.service | default $global.service }}
-          {{- if $service }}
-          ports:
-            - containerPort: {{ $service.port }}
-          {{- end }}
-
-          {{- $resources := .Values.resources | default $global.resources | default "" }}
-          resources:
-            {{- toYaml $resources | nindent 12 }}
-
-        {{- $healthchecks := .Values.healthchecks | default $global.healthchecks }}
-        {{- with $healthchecks }}
-          {{- if .enabled  }}
-          readinessProbe:
-          {{- if eq .type "port" }}
-            tcpSocket:
-              port: {{ $service.port }}
-          {{- else if eq .type "command" }}
-            exec:
-              command:
-                {{- range .command }} 
-              - {{ . }}
-                {{- end }}
-          {{- end }}
-            initialDelaySeconds: {{ .readinessProbe.initialDelaySeconds }}
-            timeoutSeconds: {{ .readinessProbe.timeoutSeconds }}
-            successThreshold: {{ .readinessProbe.successThreshold }}
-            failureThreshold: {{ .readinessProbe.failureThreshold }}
-          livenessProbe:
-          {{- if eq .type "port"}}
-            tcpSocket:
-              port: {{ $service.port }}
-          {{- else if eq .type "command" }}
-            exec:
-              command:
-                {{- range .command }} 
-              - {{ . }}
-                {{- end }}
-          {{- end }}
-            initialDelaySeconds: {{ .livenessProbe.initialDelaySeconds }}
-            timeoutSeconds: {{ .livenessProbe.timeoutSeconds }}
-            successThreshold: {{ .livenessProbe.successThreshold }}
-            failureThreshold: {{ .livenessProbe.failureThreshold }}
-          {{- end }}
-        {{- end }}
-        {{- $volumes := .Values.volumes | default $global.volumes }}
-        {{- if $volumes }}
-          volumeMounts:
-        {{- range $volumes }}
-          {{- if .name }}
-          - name: {{ .name }}
-            mountPath: {{ .mountPath | quote }}
-            {{- if .secretName }}
-            readOnly: true
+        containers:
+          - name: {{ $appName }}
+          {{- $env := .Values.env | default $global.env }}
+          {{- $envSecrets := .Values.envSecrets | default $global.envSecrets }}
+          {{- if or $env $envSecrets }}
+            env:
+            {{- $image := .Values.image | default $global.image }}
+              - name: APP_VERSION
+                value: {{ $image.tag }}
+            {{- range $key, $value := $env }}
+              - name: {{ $key }}
+                value: {{ $value | quote }}
             {{- end }}
+            {{- range $key, $secret := $envSecrets }}
+              - name: {{ $key }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ (split "/" $secret)._0 }}
+                    key: {{ (split "/" $secret)._1 }}
+              {{- end }}
           {{- end }}
-        {{- end }}
-        {{- end }}
-        {{- $phpFpmExporter := .Values.phpFpmExporter | default $global.phpFpmExporter }}
-        {{- if $phpFpmExporter.enabled }}
-        - name: php-fpm-exporter
-          image: {{ $phpFpmExporter.image }}
-          ports:
-            - containerPort: 9253
-              protocol: TCP
-          env:
-            - name: PHP_FPM_SCRAPE_URI
-              value: tcp://127.0.0.1:9000/status
-            - name: PHP_FPM_LOG_LEVEL
-              value: info
-          resources:
-            limits:
-              cpu: "50m"
-              memory: 70Mi
-            requests:
-              cpu: "10m"
-              memory: 25Mi
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-          imagePullPolicy: Always
-        {{- end }}
-    {{- if $volumes }}
-      volumes:
-      {{- range $volumes }}
+            {{- $image := .Values.image | default $global.image }}
+            {{- with $image }}
+            image: '{{ $image.repository }}:{{ $image.tag }}'
+            imagePullPolicy: {{  default "" $image.pullPolicy | quote }}
+            {{- end }}
+            {{- $service := .Values.service | default $global.service }}
+            {{- if $service }}
+            ports:
+              - containerPort: {{ $service.port }}
+            {{- end }}
+            {{- $resources := .Values.resources | default $global.resources | default "" }}
+            resources:
+              {{- toYaml $resources | nindent 12 }}
+
+          {{- $healthchecks := .Values.healthchecks | default $global.healthchecks }}
+          {{- with $healthchecks }}
+            {{- if .enabled  }}
+            readinessProbe:
+            {{- if eq .type "port" }}
+              tcpSocket:
+                port: {{ $service.port }}
+            {{- else if eq .type "command" }}
+              exec:
+                command:
+                  {{- range .command }}
+                  - {{ . }}
+                  {{- end }}
+              {{- end }}
+              initialDelaySeconds: {{ .readinessProbe.initialDelaySeconds }}
+              timeoutSeconds: {{ .readinessProbe.timeoutSeconds }}
+              successThreshold: {{ .readinessProbe.successThreshold }}
+              failureThreshold: {{ .readinessProbe.failureThreshold }}
+            livenessProbe:
+            {{- if eq .type "port"}}
+              tcpSocket:
+                port: {{ $service.port }}
+            {{- else if eq .type "command" }}
+              exec:
+                command:
+                  {{- range .command }}
+                  - {{ . }}
+                    {{- end }}
+            {{- end }}
+              initialDelaySeconds: {{ .livenessProbe.initialDelaySeconds }}
+              timeoutSeconds: {{ .livenessProbe.timeoutSeconds }}
+              successThreshold: {{ .livenessProbe.successThreshold }}
+              failureThreshold: {{ .livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- end }}
+          {{- $volumes := .Values.volumes | default $global.volumes }}
+          {{- if $volumes }}
+            volumeMounts:
+            {{- range $volumes }}
+            {{- if .name }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath | quote }}
+              {{- if .configmapName }}
+              subPath: {{ .subPath | quote }}
+              {{- end }}
+              {{- if .secretName }}
+              readOnly: true
+              {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+          {{- $metrics := .Values.metrics| default $global.metrics }}
+          {{- if $metrics.enable }}
+          - name: php-fpm-exporter
+            image: {{ $metrics.image }}
+            ports:
+              - containerPort: {{ $metrics.port }}
+                protocol: TCP
+            env:
+              - name: PHP_FPM_SCRAPE_URI
+                {{- $service := .Values.service | default $global.service }}
+                {{- if $service }}
+                value: tcp://127.0.0.1:{{ $service.port }}{{ $metrics.statusPath  }}
+                {{- else }}
+                value: tcp://127.0.0.1:9000{{ $metrics.statusPath  }}
+                {{- end }}
+              - name: PHP_FPM_LOG_LEVEL
+                value: info
+            resources:
+              limits:
+                cpu: "50m"
+                memory: 70Mi
+              requests:
+                cpu: "10m"
+                memory: 25Mi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            imagePullPolicy: Always
+          {{- end }}
+          {{- $nodeSelector := .Values.nodeSelector | default $global.nodeSelector }}
+          {{- if $nodeSelector.enabled }}
+        nodeSelector:
+          role: {{ $nodeSelector.label }}
+        tolerations:
+          - key: role
+            operator: Equal
+            value: {{ $nodeSelector.label }}
+            effect: NoSchedule
+          {{- end }}
+          {{- $priority := .Values.priority | default $global.priority }}
+          {{- if $priority.enabled }}
+        priorityClassName: {{ $priority.name }}
+          {{- end }}
+        {{- if $volumes }}
+        volumes:
+        {{- range $volumes }}
         {{- if .name }}
         - name: {{ .name }}
           {{- if .secretName }}
           secret:
             secretName: {{ .secretName }}
           {{- end }}
-        {{- end }}
+          {{- if .configmapName }}
+          configMap:
+            name: {{ .configmapName }}
+          {{- end }}
       {{- end }}
-    {{- end }}
-    {{- $nodeSelector := .Values.nodeSelector | default $global.nodeSelector }}
-    {{- if $nodeSelector.enabled }}
-      nodeSelector:
-        role: {{ $nodeSelector.label }}
-      tolerations:
-        - key: role
-          operator: Equal
-          value: {{ $nodeSelector.label }}
-          effect: NoSchedule
-    {{- end }}
+      {{- end }}
+      {{- end }}

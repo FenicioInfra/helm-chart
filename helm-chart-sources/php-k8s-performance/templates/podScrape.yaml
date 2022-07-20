@@ -1,0 +1,26 @@
+{{- $global := .Values.global }}
+{{- $metrics := .Values.metrics| default $global.metrics }}
+{{- if $metrics.enable }}
+{{- $appName := .Values.appName | default $global.appName }}
+{{- $namespace := .Values.namespace | default $global.namespace }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  labels:
+    app: {{ $appName }}
+  name: {{ $appName }}
+  namespace: {{ $namespace }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ $namespace }}
+  podMetricsEndpoints:
+    - path: /metrics
+      port: {{ $metrics.port }}
+      relabelConfigs:
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+  selector:
+    matchLabels:
+      name: {{ $appName }}
+{{- end }}
