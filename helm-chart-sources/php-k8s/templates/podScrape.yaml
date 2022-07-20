@@ -16,7 +16,7 @@ spec:
       - {{ $namespace }}
   podMetricsEndpoints:
     - path: /metrics
-      port: {{ $metrics.port }}
+      port: metrics
       relabelConfigs:
         - action: labelmap
           regex: __meta_kubernetes_pod_label_(.+)

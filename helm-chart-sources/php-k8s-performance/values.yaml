@@ -166,7 +166,7 @@ global:
 
   # Prometheus metrics
   metrics:
-    enable: false
+    enable: true
     port: 9113
     image: "hipages/php-fpm_exporter:2.2.0"
     statusPath: /status

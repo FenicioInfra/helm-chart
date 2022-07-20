@@ -125,6 +125,7 @@ spec:
           ports:
             - containerPort: {{ $metrics.port }}
               protocol: TCP
+              name: metrics
           env:
             - name: PHP_FPM_SCRAPE_URI
               {{- $service := .Values.service | default $global.service }}
