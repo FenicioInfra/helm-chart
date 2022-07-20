@@ -27,7 +27,7 @@ spec:
         {{- end }}
         name: {{ $appName }}
       {{- if $phpFpmConfig.enabled }}
-        php-fpm-configmap: {{ print $phpFpmConfig | sha256sum }}
+        php-fpm-configmap: {{ print $phpFpmConfig | sha256sum | trunc 32 }}
       {{- end }}    
     spec:
       containers:
