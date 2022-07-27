@@ -1,6 +1,7 @@
 {{- $global := .Values.global }}
 {{- $appName := .Values.appName | default $global.appName }}
-{{- if $global.phpFpmConfig.enabled }}
+{{- $phpFpmConfig := .Values.phpFpmConfig | default $global.phpFpmConfig }}
+{{- if $phpFpmConfig.enabled }}
 ---
 apiVersion: v1
 kind: ConfigMap
