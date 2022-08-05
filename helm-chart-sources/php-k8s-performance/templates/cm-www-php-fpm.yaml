@@ -9,5 +9,5 @@ metadata:
   name: www-php-fpm-{{ $appName }}
 data: 
   www-php-fpm.conf: |-
-{{ include "php-fpm-conf" $global | indent 4 }}
+{{ include "php-fpm-conf" . | indent 4 }}
 {{- end }}
