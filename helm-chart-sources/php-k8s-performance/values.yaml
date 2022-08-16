@@ -1,6 +1,12 @@
-
+#
+# Global values.
+# A children field of global is used when
+# it is not defined under the app to deploy.
+#
 global: 
-  # appName 
+  # appNamame field is used
+  # as part of the name of kubernetes
+  # objects.
   appName: "app"
   namespace: "example"
 
@@ -12,7 +18,7 @@ global:
   nodeSelector:
     enabled: false
     label: production
-  # Número de replicaSets históricos conservados
+  # Number of historic replicaSets to keep
   historyLimit: 1
   # replicaCount is the number of replicas to deploy
   # note if autoscaling enabled, replicaCount will
