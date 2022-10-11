@@ -1,7 +1,6 @@
 {{- $global := .Values.global }}
 {{- $ingress := .Values.ingress | default $global.ingress }}
 {{- if $ingress.enabled }}
-{{- $IngressType := $ingress.type | default $global.type }}
 {{- $appName := .Values.appName | default $global.appName }}
 {{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
 
@@ -17,23 +16,23 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
     nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
     nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ $appName }}
-    {{- if eq  $IngressType "external" }}
+    {{- if not ( eq  $ingress.type "internal" )}}
       {{- $whitelist := $ingress.whitelist_ip | default $global.whitelist_ip }}
       {{- if $whitelist.enabled }}
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ join ", " $whitelist.ip_list }}
       {{- end }}
-      {{- $phpFpmExporter := .Values.phpFpmExporter| default $global.phpFpmExporter }}
-      {{- if $phpFpmExporter.enabled }}
+    {{- end }}
+    {{- $phpFpmExporter := .Values.phpFpmExporter| default $global.phpFpmExporter }}
+    {{- if $phpFpmExporter.enabled }}
     nginx.ingress.kubernetes.io/server-snippet: |
       location {{ $phpFpmExporter.statusPath }} {
           return 403 {{ $phpFpmExporter.statusPath }};
       }
-      {{- end }}
     {{- end }}
   name: {{ $appName }}
   namespace: {{ .Release.Namespace }}
 spec:
-  {{- if eq  $IngressType "external" }}
+  {{- if not ( eq  $ingress.type "internal" )}}
   tls:
     - hosts:
        - {{ $ingress.host }}
