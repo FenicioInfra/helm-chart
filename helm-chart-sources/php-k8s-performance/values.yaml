@@ -130,6 +130,7 @@ global:
   # ingress configuration
   ingress:
     enabled: true
+    type: external
 
     # whitelist_ip annotation for NGINX
     whitelist_ip:
