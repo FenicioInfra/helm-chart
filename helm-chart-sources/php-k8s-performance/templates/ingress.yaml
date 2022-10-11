@@ -1,7 +1,7 @@
 {{- $global := .Values.global }}
 {{- $ingress := .Values.ingress | default $global.ingress }}
-{{- $IngressType := $ingress.type | default $global.type }}
 {{- if $ingress.enabled }}
+{{- $IngressType := $ingress.type | default $global.type }}
 {{- $appName := .Values.appName | default $global.appName }}
 {{- $performanceTests := .Values.performanceTests | default $global.performanceTests }}
 
