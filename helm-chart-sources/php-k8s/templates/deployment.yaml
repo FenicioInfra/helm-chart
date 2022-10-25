@@ -145,7 +145,7 @@ spec:
                 memory: 25Mi
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
-            imagePullPolicy: Always
+            imagePullPolicy: IfNotPresent
           {{- end }}
           {{- $nodeSelector := .Values.nodeSelector | default $global.nodeSelector }}
           {{- if $nodeSelector.enabled }}
