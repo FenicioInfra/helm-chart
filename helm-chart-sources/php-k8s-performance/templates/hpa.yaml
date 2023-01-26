@@ -2,7 +2,7 @@
 {{- $autoscaling := .Values.autoscaling | default $global.autoscaling }}
 {{- $appName := .Values.appName | default $global.appName }}
 {{- if $autoscaling.enabled }}
-apiVersion: autoscaling/v2beta2 
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ $appName }} 
