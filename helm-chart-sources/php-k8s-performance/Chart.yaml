@@ -1,6 +1,7 @@
 apiVersion: v2
 name: php-k8s-performance
 description: Helm chart for deploying php apps with blue green deployment strategy as an option.
+icon: https://www.php.net/images/php8/logo_php8_1.svg
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -14,4 +15,4 @@ type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
-version: 1.0.31
+version: 1.0.32

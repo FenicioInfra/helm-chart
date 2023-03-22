@@ -32,14 +32,6 @@ metadata:
   name: {{ $appName }}
   namespace: {{ .Release.Namespace }}
 spec:
-  {{- if not ( eq  $ingress.type "internal" )}}
-  tls:
-    - hosts:
-       - {{ $ingress.host }}
-      {{- if $ingress.secretName  }}
-      secretName: {{ $ingress.secretName }}
-      {{- end }}
-  {{- end }}
   rules:
   - host: {{ $ingress.host | quote }}
     http:

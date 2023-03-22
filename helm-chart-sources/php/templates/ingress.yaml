@@ -14,12 +14,6 @@ metadata:
   name: {{ template "fullname" . }}-ingress
   namespace: {{ .Release.Namespace }}
 spec:
-  tls:
-    - hosts:
-        - {{ .Values.ingress.host }}
-      {{- if .Values.ingress.secretName  }}
-      secretName: {{ .Values.ingress.secretName }}
-      {{- end }}
   rules:
     - host: {{ .Values.ingress.host }}
 {{- end }}

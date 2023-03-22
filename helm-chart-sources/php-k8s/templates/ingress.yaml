@@ -21,12 +21,6 @@ metadata:
   name: {{ $appName }}
   namespace: {{ .Release.Namespace }}
 spec:
-  tls:
-    - hosts:
-       - {{ $ingress.host }}
-      {{- if $ingress.secretName  }}
-      secretName: {{ $ingress.secretName }}
-      {{- end }}
   rules:
   - host: {{ $ingress.host }}
     http:

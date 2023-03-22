@@ -19,14 +19,6 @@ metadata:
   name: {{ $appName }}
   namespace: {{ .Release.Namespace }}
 spec:
-  tls:
-    {{- range $host := $ingress.hosts }}
-    - hosts:
-       - {{ $host.name }}
-      {{- if $host.secretName  }}
-      secretName: {{ $host.secretName }}
-      {{- end }}
-    {{- end }}
   rules:
   {{- $service := .Values.service | default $global.service }}
   {{- range $host := $ingress.hosts }}
